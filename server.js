@@ -5,26 +5,10 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const PORT = 3000;
-const MONGO_UN = process.env.MONGO_UN;
-const MONGO_PW = process.env.MONGO_PW;
-const mongoUrl = 
-	'mongodb+srv://' + 
-	MONGO_UN + 
-	':' + 
-	MONGO_PW + 
-	'@loom-nsyqv.azure.mongodb.net/test?retryWrites=true&w=majority';
+const db =require('./db.js');
 
-
-const MongoClient = require('mongodb').MongoClient
-
-const client = new MongoClient(mongoUrl);
-
-client.connect((err, database) => {
-	if (err) return console.log(err)
-	db = client.db('loom')
-	app.listen(PORT, function() {
-		console.log('listening on ' + PORT);
-	})
+app.listen(PORT, function() {
+	console.log('listening to webserver on ' + PORT);
 })
 
 app.set('view engine', 'ejs')
@@ -33,50 +17,64 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
+
+var router = express.Router();
+
+app.use((req, res, next) => {
+	console.log('Request type:' + req.method);
+	next();
+});
+
 // read request
 app.get('/', function(request, response) {
-	var cursor = db.collection('monsters').find().toArray(function(err, results) {
-		console.log(results)
+	db.getMonsterArray().then((results) =>{
 		response.render('index.ejs',{monsters: results})
-	})
+		console.log(results.length + ' monsters!')
+	}).catch(function(err) {
+		console.log('ERROR: unable to get monsters from DB')
+		console.log(err)
+	});
 })
 
 // append request
 app.post('/monsters', (request, response) => {
 	console.log("monster recieved");
 	console.log(request.body);
-	db.collection('monsters').save(request.body, (err, result) => {
-		if (err) return console.log(err)
-		console.log('saved to database')
+	db.addMonster(request.body).then((successMessage) => {
+		console.log(successMessage);
 		response.redirect('/');
-	})
+	});
 })
 
-// edit request
-app.put('/monsters', (req, res) => {
-  db.collection('monsters')
-  .findOneAndUpdate(
-  	{
-  		// name: 'Goblin'
-  	},
-  	{
-    $set: {
-      name: req.body.name,
-      special: req.body.special
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
+// update request
+app.put('/monsters', (request, response) => {
+	db.editMonster(
+		{
+
+		},
+		{
+    		$set: {
+      			name: request.body.name,
+      			special: request.body.special
+    		}
+    	},
+    	{
+    		sort: {_id: 1},
+    		upsert: true
+  		}
+    ).then(result => {
+    	response.send(result);
+    	// response.redirect('/');
+    }, err => {
+    	response.send(err);
+    	console.log("ERROR Updating Monster");
+    	console.log(err);
+    })
 })
 
 // delete request
 app.delete('/monsters', (request, response) => {
-	db.collection('monsters')
-	.findOneAndDelete(
+	db.deleteMonster(
 		//query
 	{
 		name: request.body.name
@@ -84,10 +82,11 @@ app.delete('/monsters', (request, response) => {
 		//options
 	{
 
-	},
-		//callback
-	(err, results) => {
-		if (err) return response.send(500, err)
-		response.send({message: 'A monster got deleted'})
-	})
+	}).then(result => {
+		response.redirect('/');
+    }, err => {
+    	response.send(err);
+    	console.log("ERROR Deleting Monster");
+    	console.log(err);
+    })
 })

@@ -5,7 +5,7 @@ update.addEventListener('click', function () {
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 		    'name': 'Goblin',
-		    'special': 'nothing particularly interesting.'
+		    'special': 'something particularly interesting. hehel.'
   		})
 	})
 	.then(response => {

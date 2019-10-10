@@ -98,10 +98,23 @@ function getCollectionInformation(targetCollection) {
 	})	
 }
 
+function newColl(collname) {
+	console.log('Attempting to make a new collection named '+ collname);
+	return new Promise(( resolve,reject) => {
+		db.createCollection(collname).then(result => {
+			resolve(result)
+	 		}, reason => {
+	 		console.log(reason);
+	 		}
+		)
+	})
+}
+
 module.exports = {
 	getMonsterArray,
 	addMonster,
 	editMonster,
 	deleteMonster,
-	runCommand
+	runCommand,
+	newColl
 }

@@ -50,7 +50,9 @@ app.post('/monsters', (request, response) => {
 app.post('/validator', (request,response) => {
 	console.log("validation update request recieved");
 	dbModify();
-
+	// db.newColl('log').then(result =>{
+	// 	console.log(result);
+	// });
 })
 
 // update request

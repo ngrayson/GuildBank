@@ -77,9 +77,31 @@ function deleteMonster(filter, options) {
 	});
 }
 
+function runCommand(command, options) {
+	console.log('running command on remote Db:');
+	console.log(command)
+	return new Promise((resolve, reject) => {
+		db.command(command, options, (err, result) => {
+			if(err) return console.log(err);
+			else resolve('great success!');
+		});
+	});
+}
+
+function getCollectionInformation(targetCollection) {
+	console.log('Attempting to get information on the collection: '+targetCollection);
+	return new Promise((resolve,reject) => {
+		db.getCollectionInfos( {name: targetCollection}, (resolve, reject) => {
+			if(err) return console.log(err);
+			else reslove(result);
+		});
+	})	
+}
+
 module.exports = {
 	getMonsterArray,
 	addMonster,
 	editMonster,
-	deleteMonster
+	deleteMonster,
+	runCommand
 }

@@ -5,7 +5,8 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const PORT = 3000;
-const db =require('./db.js');
+const db = require('./db.js');
+const dbModify = require('./db/db_schema_modify.js');
 
 app.listen(PORT, function() {
 	console.log('listening to webserver on ' + PORT);
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 
 // read request
 app.get('/', function(request, response) {
-	db.getMonsterArray().then((results) =>{
+	db.getMonsterArray().then((results) => {
 		response.render('index.ejs',{monsters: results})
 		console.log(results.length + ' monsters!')
 	}).catch(function(err) {
@@ -44,6 +45,12 @@ app.post('/monsters', (request, response) => {
 		console.log(successMessage);
 		response.redirect('/');
 	});
+})
+
+app.post('/validator', (request,response) => {
+	console.log("validation update request recieved");
+	dbModify();
+
 })
 
 // update request

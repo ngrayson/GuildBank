@@ -1,4 +1,4 @@
-var update = document.getElementById('update')
+let update = document.getElementById('update')
 update.addEventListener('click', function () {
 	fetch('monsters', {
   		method: 'put',
@@ -17,7 +17,7 @@ update.addEventListener('click', function () {
 	})
 })
 
-var del = document.getElementById('delete')
+let del = document.getElementById('delete')
 del.addEventListener('click',function (){
 	fetch('monsters', {
 		method: 'delete',
@@ -32,5 +32,13 @@ del.addEventListener('click',function (){
 	.then(data => {
 		console.log(data)
 		window.location.reload()
+	})
+})
+
+let validatorUpdate = document.getElementById('validatorUpdate')
+validatorUpdate.addEventListener('click',function () {
+	fetch('validator', {
+		method: 'post',
+		headers: {'Content-Type': 'application/json'}
 	})
 })

@@ -1,5 +1,3 @@
-// start with npm run dev to run in development mode (refresh on save)
-// const webserver = require('./server/webserver.js');
 require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser')

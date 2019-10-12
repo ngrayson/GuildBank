@@ -5,8 +5,8 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const PORT = 3000;
-const db = require('../db.js');
-const dbModify = require('../db/db_schema_modify.js');
+const db = require('./db.js');
+const dbModify = require('./db/db_schema_modify.js');
 
 app.listen(PORT, function() {
 	console.log('listening to webserver on ' + PORT);

@@ -1,31 +1,25 @@
 require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser')
-const app = express();
 const PORT = 3000;
 const db = require('../db.js');
 const dbModify = require('../db/db_schema_modify.js');
 
-app.listen(PORT, function() {
-	console.log('listening to webserver on ' + PORT);
-})
-
-app.set('view engine', 'ejs')
-
-app.use(express.static('public'))
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
-
-
 var router = express.Router();
 
-app.use((req, res, next) => {
+router.use(express.static('public'))
+router.use(bodyParser.urlencoded({extended: true}))
+router.use(bodyParser.json())
+
+
+
+router.use((req, res, next) => {
 	console.log('Request type:' + req.method);
 	next();
 });
 
 // read request
-app.get('/', function(request, response) {
+router.get('/', function(request, response) {
 	db.getMonsterArray().then((results) => {
 		response.render('index.ejs',{monsters: results})
 		console.log(results.length + ' monsters!')
@@ -36,7 +30,7 @@ app.get('/', function(request, response) {
 })
 
 // append request
-app.post('/monsters', (request, response) => {
+router.post('/monsters', (request, response) => {
 	console.log("monster recieved");
 	console.log(request.body);
 	db.addMonster(request.body).then((successMessage) => {
@@ -45,7 +39,7 @@ app.post('/monsters', (request, response) => {
 	});
 })
 
-app.post('/validator', (request,response) => {
+router.post('/validator', (request,response) => {
 	console.log("validation update request recieved");
 	dbModify();
 	// db.newColl('log').then(result =>{
@@ -54,7 +48,7 @@ app.post('/validator', (request,response) => {
 })
 
 // update request
-app.put('/monsters', (request, response) => {
+router.put('/monsters', (request, response) => {
 	db.editMonster(
 		{
 
@@ -80,7 +74,7 @@ app.put('/monsters', (request, response) => {
 })
 
 // delete request
-app.delete('/monsters', (request, response) => {
+router.delete('/monsters', (request, response) => {
 	db.deleteMonster(
 		//query
 	{
@@ -98,3 +92,4 @@ app.delete('/monsters', (request, response) => {
     })
 })
 
+module.exports = router;

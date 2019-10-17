@@ -41,10 +41,13 @@ router.post('/monsters', (request, response) => {
 
 router.post('/validator', (request,response) => {
 	console.log("validation update request recieved");
-	dbModify();
-	// db.newColl('log').then(result =>{
+
+	let newDbName = 'characters';
+
+	// db.newColl(newDbName).then(result =>{
 	// 	console.log(result);
 	// });
+	dbModify();
 })
 
 // update request

@@ -19,14 +19,18 @@ client.connect((err, database) => {
 	db = client.db('loom')	
 })
 
-function getMonsterArray() {
-	console.log('calling monsters');
+function getFullCollectionArray(collectionName) {
+	console.log('grabbing collection: ' + collectionName);
 	return new Promise((resolve, reject) => {
-		db.collection('monsters',{strict:true}, (err, col) => {
+		db.collection(collectionName,{strict:true}, (err, col) => {
 			if(err) return console.log(err);
 			resolve(col.find().toArray());
 		});
 	});
+}
+
+function getMonsterArray() {
+	return getFullCollectionArray('monsters');
 }
 
 function addMonster(request) {

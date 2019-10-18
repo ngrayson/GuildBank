@@ -11,7 +11,10 @@ const mongoUrl =
 
 const MongoClient = require('mongodb').MongoClient
 
-const client = new MongoClient(mongoUrl,{useUnifiedTopology: true});
+const client = new MongoClient(mongoUrl, {
+	useUnifiedTopology: true,
+	useNewUrlParser: true
+});
 
 client.connect((err, database) => {
 	if (err) return console.log (err)

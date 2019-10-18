@@ -13,7 +13,14 @@ console.log('\x1b[36m%s','\n\n');
 console.log(TEXTBAR_DOUBLE);
 console.log(' Starting Loom...\n');
 
+const db = require('./db.js');
+const chatbot = require('./chatbot/botserver.js');
 
+let serverState = 0;
+let webserverBooted = false;
+let   chatbotBooted = false;
+
+bootMonitor();
 
 // express bits
 if(WEBSERVER_ENABLED) {
@@ -26,16 +33,15 @@ if(WEBSERVER_ENABLED) {
 	webApp.listen(PORT, () => {
 		console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
 			' ✓',
-			' Webserver listening on port ', PORT) ;
+			' Webserver listening on port ', PORT);
+		webserverBooted = true;
 	})
 	webApp.use(router);
 	console.log('  Webserver app initializing...');
-
 }
 
 
 if(CHATBOT_ENABLED) {
-	const chatbot = require('./chatbot/botserver.js');
 	if(DISCORDCLIENT_ENABLED) {
 		const Discord = require('discord.js');
 		const client = new Discord.Client();
@@ -45,6 +51,7 @@ if(CHATBOT_ENABLED) {
 			console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
 				' ✓',' Discord Bot logged in under ', client.user.tag
 				);
+			chatbotBooted = true;
 		});
 
 		client.on('message', msg => {
@@ -74,5 +81,60 @@ if(CHATBOT_ENABLED) {
 		console.log(TEXTBAR_SINGLE);
 	}
 }
-	
+
 console.log(TEXTBAR_SINGLE);
+
+// serverState
+// 0: booting
+// 1: boot complete, if CONSOLE_CHAT_OVERRIDE  is enabled, active as a chat interface, awaiting user input
+// 2: thinking
+
+function bootMonitor() {
+	const intervalObj = setInterval(() =>{
+		switch (serverState) {
+			case 0:
+				let serverReady = (!WEBSERVER_ENABLED || (WEBSERVER_ENABLED && webserverBooted))
+				let chatbotReady =(!DISCORDCLIENT_ENABLED   || (DISCORDCLIENT_ENABLED   && chatbotBooted  ))
+				let databaseReady = db.databaseReady();
+				if( serverReady && chatbotReady && databaseReady){
+					console.log("\n Everything booted correctly!")
+					console.log(TEXTBAR_SINGLE)
+					serverState = 1;
+
+					// Exit interval
+					if(!CONSOLE_CHAT_OVERRIDE) clearInterval(intervalObj);
+				}
+				else 
+					// console.log( serverReady + ' '+ chatbotReady +' '+ databaseReady)
+				break;
+			case 1:
+				// if(CONSOLE_CHAT_OVERRIDE) {
+				// 	const readline = require('readline');
+				// 	const rl = readline.createInterface({
+				// 		input: process.stdin,
+				// 		output: process.stdout
+				// 	})
+				// 	serverState=2;
+				// 	promptRootMessage(rl).then(()=> {
+				// 		serverState = 1;
+				// 	});
+				// }
+				// break;
+			case 2:
+			default:
+				break;
+		}
+	}, 500);
+}
+
+
+function promptRootMessage(rl) {
+	return new Promise((resolve,reject) => {
+		if(err) return console.log(err);
+		rl.question('\x1b[35m |>\x1b[0m ', (answer) =>{
+			botserver.rootMessage(answer);
+		}).then(() => {
+			resolve(true);
+		})
+	})
+}

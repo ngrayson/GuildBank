@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+let databaseBooted = false;
+
 const MONGO_UN = process.env.MONGO_UN;
 const MONGO_PW = process.env.MONGO_PW;
 const mongoUrl = 
@@ -22,6 +24,7 @@ client.connect((err, database) => {
 		' ✓',
 		' Connected to the databse as ', MONGO_UN)
 	db = client.db('loom')	
+	databaseBooted = true;
 })
 console.log('  MongoDB connection initializing...');
 
@@ -120,7 +123,12 @@ function newColl(collname) {
 	})
 }
 
+function databaseReady() {
+	return databaseBooted;
+}
+
 module.exports = {
+	databaseReady,
 	getMonsterArray,
 	addMonster,
 	editMonster,

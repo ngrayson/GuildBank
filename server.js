@@ -108,18 +108,22 @@ function bootMonitor() {
 					// console.log( serverReady + ' '+ chatbotReady +' '+ databaseReady)
 				break;
 			case 1:
-				// if(CONSOLE_CHAT_OVERRIDE) {
-				// 	const readline = require('readline');
-				// 	const rl = readline.createInterface({
-				// 		input: process.stdin,
-				// 		output: process.stdout
-				// 	})
-				// 	serverState=2;
-				// 	promptRootMessage(rl).then(()=> {
-				// 		serverState = 1;
-				// 	});
-				// }
-				// break;
+				if(CONSOLE_CHAT_OVERRIDE) {
+					console.log('\x1b[35m%s\x1b[0m'," Chat Override Enabled: now parsing non-user-specific commands:");
+					const readline = require('readline');
+					const rl = readline.createInterface({
+						input: process.stdin,
+						output: process.stdout
+					})
+					serverState=2;
+					promptRootMessage(rl).then(()=> {
+						serverState = 1;
+					}).catch(err => {
+						console.log(' there was a problem')
+						console.log(err)
+					});
+				}
+				break;
 			case 2:
 			default:
 				break;
@@ -130,11 +134,13 @@ function bootMonitor() {
 
 function promptRootMessage(rl) {
 	return new Promise((resolve,reject) => {
-		if(err) return console.log(err);
-		rl.question('\x1b[35m |>\x1b[0m ', (answer) =>{
-			botserver.rootMessage(answer);
-		}).then(() => {
+		rl.question('\x1b[35m  |>\x1b[0m ', (answer) =>{
+			chatbot.rootMessage(answer);
+			resolve(answer)
+		});/*.then(() => {
 			resolve(true);
-		})
-	})
+		});/*.catch(err => {
+			reject(err);
+		});*/
+	});
 }

@@ -75,3 +75,4 @@ if(CHATBOT_ENABLED) {
 	}
 }
 	
+console.log(TEXTBAR_SINGLE);

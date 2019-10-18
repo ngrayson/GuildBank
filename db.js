@@ -11,13 +11,16 @@ const mongoUrl =
 
 const MongoClient = require('mongodb').MongoClient
 
-const client = new MongoClient(mongoUrl);
+const client = new MongoClient(mongoUrl,{useUnifiedTopology: true});
 
 client.connect((err, database) => {
 	if (err) return console.log (err)
-	console.log("Connected to databse")
+	console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
+		' ✓',
+		' Connected to the databse as ', MONGO_UN)
 	db = client.db('loom')	
 })
+console.log('  MongoDB connection initializing...');
 
 function getFullCollectionArray(collectionName) {
 	console.log('grabbing collection: ' + collectionName);

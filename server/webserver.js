@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser')
-const PORT = 3000;
+// const PORT = 3000;
 const db = require('../db.js');
 const dbModify = require('../db/db_schema_modify.js');
 
@@ -10,8 +10,6 @@ var router = express.Router();
 router.use(express.static('public'))
 router.use(bodyParser.urlencoded({extended: true}))
 router.use(bodyParser.json())
-
-
 
 router.use((req, res, next) => {
 	console.log('Request type:' + req.method);

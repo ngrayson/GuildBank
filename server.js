@@ -19,70 +19,95 @@ const chatbot = require('./chatbot/botserver.js');
 let serverState = 0;
 let webserverBooted = false;
 let   chatbotBooted = false;
+let    cliBotBooted = false;
 
 bootMonitor();
+runWebServer();
+runChatBot();
+console.log(TEXTBAR_SINGLE);
 
 // express bits
-if(WEBSERVER_ENABLED) {
-	const express = require('express');
-	const webApp = express();
-	const PORT = 3000;
-	const router = require('./server/webserver');
-	webApp.set('view engine', 'ejs')
-
-	webApp.listen(PORT, () => {
-		console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
-			' ✓',
-			' Webserver listening on port ', PORT);
-		webserverBooted = true;
-	})
-	webApp.use(router);
-	console.log('  Webserver app initializing...');
+function runWebServer() {
+  if(WEBSERVER_ENABLED) {
+  	const express = require('express');
+  	const webApp = express();
+  	const PORT = 3000;
+  	const router = require('./server/webserver');
+  	webApp.set('view engine', 'ejs')
+  
+  	webApp.listen(PORT, () => {
+  		console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
+  			' ✓',
+  			' Webserver listening on port ', PORT);
+  		webserverBooted = true;
+  	})
+  	webApp.use(router);
+  	console.log('  Webserver app initializing...');
+  }
 }
 
 
-if(CHATBOT_ENABLED) {
-	if(DISCORDCLIENT_ENABLED) {
-		const Discord = require('discord.js');
-		const client = new Discord.Client();
-		const token = process.env.DBOT_TOKEN;
-
-		client.on('ready', () => {
-			console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
-				' ✓',' Discord Bot logged in under ', client.user.tag
-				);
-			chatbotBooted = true;
-		});
-
-		client.on('message', msg => {
-			chatbot.message(msg);
-		})
-
-		client.on('error', err => {
-			console.log('\x1b[31m')
-			console.log(err.error)
-			if(Object.entries(err.error)[0][1] == 'SELF_SIGNED_CERT_IN_CHAIN') {
-				console.log('Bot was blocked by a certificate issue, may be a firewall problem.' + 
-					'\n shutting bot down.')
-				client.destroy().then(() => {
-					console.log(' Discord bot client shut down successful.')
-				});
-			}
-			console.log('\x1b[0m')
-		});
-
-		client.on('reconnecting', msg => {
-			console.log('Discord Bot attempting to reconnect...')
-		})
-
-		client.login(token)
-		  .then(console.log('  Discord client logging in...'))
-		  .catch(console.error);
-		console.log(TEXTBAR_SINGLE);
-	}
+function runChatBot() {
+  if(CHATBOT_ENABLED) {
+  	if(DISCORDCLIENT_ENABLED) {
+  		const Discord = require('discord.js');
+  		const client = new Discord.Client();
+  		const token = process.env.DBOT_TOKEN;
+  
+  		client.on('ready', () => {
+  			console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
+  				' ✓',' Discord Bot logged in under ', client.user.tag
+  				);
+  			chatbotBooted = true;
+  		});
+  
+  		client.on('message', msg => {
+  			chatbot.message(msg);
+  		})
+  
+  		client.on('error', err => {
+  			console.log('\x1b[31m')
+  			console.log(err.error)
+  			if(Object.entries(err.error)[0][1] == 'SELF_SIGNED_CERT_IN_CHAIN') {
+  				console.log('Bot was blocked by a certificate issue, may be a firewall problem.' +
+  					'\n shutting bot down.')
+  				client.destroy().then(() => {
+  					console.log(' Discord bot client shut down successful.')
+  				});
+  			}
+  			console.log('\x1b[0m')
+  		});
+  
+  		client.on('reconnecting', msg => {
+  			console.log('Discord Bot attempting to reconnect...')
+  		})
+  
+  		client.login(token)
+  		  .then(console.log('  Discord client logging in...'))
+  		  .catch(console.error);
+  	}
+  }
 }
 
-console.log(TEXTBAR_SINGLE);
+function runCLIBot() {
+  const readline = require('readline');
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '\x1b[35m  |>\x1b[0m '
+  });
+  
+  rl.on('line', (line) => {
+    console.log(`Received: ${line}`);
+    rl.prompt();
+  });
+  
+  console.log('\x1b[32m%s\x1b[0m%s\x1b[0m',
+  				' ✓',' CLI Bot Now Active'
+  				);
+  cliBotBooted = true;
+  return rl;
+}
 
 // serverState
 // 0: booting
@@ -97,50 +122,29 @@ function bootMonitor() {
 				let chatbotReady =(!DISCORDCLIENT_ENABLED   || (DISCORDCLIENT_ENABLED   && chatbotBooted  ))
 				let databaseReady = db.databaseReady();
 				if( serverReady && chatbotReady && databaseReady){
+					if(CONSOLE_CHAT_OVERRIDE) rl = runCLIBot();
 					console.log("\n Everything booted correctly!")
 					console.log(TEXTBAR_SINGLE)
-					serverState = 1;
+					if(CONSOLE_CHAT_OVERRIDE) console.log('\x1b[35m%s\x1b[0m'," Chat Override Enabled: now parsing non-user-specific commands:");
+          serverState = 1;
+					
+					rl.prompt();
 
 					// Exit interval
-					if(!CONSOLE_CHAT_OVERRIDE) clearInterval(intervalObj);
+					clearInterval(intervalObj);
 				}
-				else 
+				else {
+				  
+				}
 					// console.log( serverReady + ' '+ chatbotReady +' '+ databaseReady)
 				break;
 			case 1:
-				if(CONSOLE_CHAT_OVERRIDE) {
-					console.log('\x1b[35m%s\x1b[0m'," Chat Override Enabled: now parsing non-user-specific commands:");
-					const readline = require('readline');
-					const rl = readline.createInterface({
-						input: process.stdin,
-						output: process.stdout
-					})
-					serverState=2;
-					promptRootMessage(rl).then(()=> {
-						serverState = 1;
-					}).catch(err => {
-						console.log(' there was a problem')
-						console.log(err)
-					});
-				}
 				break;
 			case 2:
+			  break;
 			default:
 				break;
 		}
 	}, 500);
 }
 
-
-function promptRootMessage(rl) {
-	return new Promise((resolve,reject) => {
-		rl.question('\x1b[35m  |>\x1b[0m ', (answer) =>{
-			chatbot.rootMessage(answer);
-			resolve(answer)
-		});/*.then(() => {
-			resolve(true);
-		});/*.catch(err => {
-			reject(err);
-		});*/
-	});
-}

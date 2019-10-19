@@ -1,9 +1,41 @@
-require('dotenv').config()
+require('dotenv').config({path: '/../.env'})
 const express = require('express');
 const bodyParser = require('body-parser')
-// const PORT = 3000;
+
+const WEBSERVER_ENABLED = process.env.WEBSERVER_ENABLED == 1;
 const db = require('../db.js');
 const dbModify = require('../db/db_schema_modify.js');
+
+let webserverReady = false;
+
+function run() {
+  if(WEBSERVER_ENABLED) {
+  	const webApp = express();
+  	const PORT = 3000;
+  	webApp.set('view engine', 'ejs')
+  
+  	webApp.listen(PORT, () => {
+  		console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
+  			' ✓',
+  			' Webserver listening on port ', PORT);
+  		webserverReady = true;
+  	})
+  	webApp.use(router);
+  	console.log('  Webserver app initializing...');
+  }
+}
+
+function isReady() {
+  return webserverReady;
+}
+
+
+
+// WHoever has to fix this later, myself included, I am sorry
+// the above code should be easy to understand and work, no promises on the below code.
+// I had used the router for something i tried to be fancy doing but it was wrong.
+
+
 
 var router = express.Router();
 
@@ -93,4 +125,7 @@ router.delete('/monsters', (request, response) => {
     })
 })
 
-module.exports = router;
+module.exports = {
+  run,
+  isReady
+  }

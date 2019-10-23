@@ -3,23 +3,39 @@ let charactersValidator = {
 		validator: {
 			$jsonSchema: {
 				bsonType: "object",
-         		required: [ "character_name", "player_id", "date_created" ], 
+         		required: [ "_id","character_name", "player_id", "date_created", "experience", "moneyCP", "resonite" ], 
          		properties: { 
-         			id: {
-         				bsonType: "objectid" 
+         			_id: {
+         				bsonType: "objectId" 
          			},
             		character_name: { 
-               			bsonType: "string", 
-               			description: "required and must be a string"
-               		}, 
+               		bsonType: "string", 
+               		description: "required and must be a string"
+                  }, 
             		player_id: { 
-               			bsonType: "int", 
-               			description: "required and must be an integer"
-               		},
-               		date_created: {
-               			bsonType: "timestamp",
-               			description: "required and must be a timestamp"
-               		}
+               		bsonType: "int", 
+               		description: "required and must be an integer"
+               	},
+               	date_created: {
+               		bsonType: "timestamp",
+               		description: "required and must be a timestamp"
+               	},
+                  experience: {
+                     bsonType: "int",
+                     description: "required and must be an integer"
+                  },
+                  moneyCP: {
+                     bsonType: "int",
+                     description: "required and must be an integer"
+                  },
+                  resonite: {
+                     bsonType: "int",
+                     description: "required and must be an integer"
+                  },
+                  inventory: {
+                     bsonType: "object",
+                     description: "must be an object"
+                  }
          		}
        		}
 		},	
@@ -95,5 +111,6 @@ let monstersValidator = {
 
 module.exports ={
 	monstersValidator,
-	playersValidator
+	playersValidator,
+   charactersValidator
 }

@@ -24,11 +24,11 @@ function run() {
 			console.log('\x1b[31m')
 			console.log(err.error)
 			if(Object.entries(err.error)[0][1] == 'SELF_SIGNED_CERT_IN_CHAIN') {
-				console.log('Bot was blocked by a certificate issue, may be a firewall problem.' +
+				console.log('\nBot was blocked by a certificate issue, may be a firewall problem.' +
 					'\n shutting bot down.')
-				client.destroy().then(() => {
-					console.log(' Discord bot client shut down successful.')
-				});
+				// client.destroy().then(() => {
+				// 	console.log(' Discord bot client shut down successful.')
+				// });
 			}
 			console.log('\x1b[0m')
 		});

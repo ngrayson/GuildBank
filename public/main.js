@@ -1,3 +1,5 @@
+const log = require('./util/util.js').log;
+
 let update = document.getElementById('update')
 update.addEventListener('click', function () {
 	fetch('monsters', {
@@ -12,7 +14,7 @@ update.addEventListener('click', function () {
 		if (response.ok) return response.json()
 	})
 	.then(data => {
-		console.log(data)
+		log(data, true)
 		window.location.reload(true)
 	})
 })
@@ -30,7 +32,7 @@ del.addEventListener('click',function (){
 		if (response.ok) return response.json()
 	})
 	.then(data => {
-		console.log(data)
+		log(data, true)
 		window.location.reload()
 	})
 })

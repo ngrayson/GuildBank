@@ -2,16 +2,17 @@
 require('dotenv').config()
 const express = require('express');
 
+const util = require('./util/util.js');
+const log = require('./util/util.js').log;
+
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const CONSOLE_CHAT_OVERRIDE = process.env.CONSOLE_CHAT_OVERRIDE == 1;
 const WEBSERVER_ENABLED = process.env.WEBSERVER_ENABLED == 1;
 
-const TEXTBAR_DOUBLE = '\x1b[36m==================================================\x1b[0m';
-const TEXTBAR_SINGLE = '\x1b[36m--------------------------------------------------\x1b[0m';
 
-console.log('\x1b[36m%s','\n\n');
-console.log(TEXTBAR_DOUBLE);
-console.log(' Starting Loom...\n');
+log('\x1b[36m','\n\n',true);
+util.logBar(2,true);
+log(' Starting Loom...\n',true);
 
 const db = require('./db.js');
 const chatbot = require('./chatbot/botserver.js');
@@ -22,32 +23,41 @@ let serverState = 0;
 bootMonitor();
 webserver.run();
 chatbot.run();
-console.log(TEXTBAR_SINGLE);
+util.logBar(1,true);
 
 
 // serverState
-// 0: booting
-// 1: boot complete, if CONSOLE_CHAT_OVERRIDE  is enabled, active as a chat interface, awaiting user input
-// 2: thinking
+// 0: booting services
+// 1: service boot complete, checking setup
 
 function bootMonitor() {
 	const intervalObj = setInterval(() =>{
 		switch (serverState) {
 			case 0:
 				let serverOK = (!WEBSERVER_ENABLED || (WEBSERVER_ENABLED && webserver.isReady()))
-				let chatbotOK =(!CHATBOT_ENABLED   || (CHATBOT_ENABLED   && chatbot.isReady()))
+				let chatbotOK = (!CHATBOT_ENABLED   || (CHATBOT_ENABLED   && chatbot.isReady()))
 				let databaseOK = db.databaseReady();
 				if( serverOK && chatbotOK && databaseOK){
-					if(CONSOLE_CHAT_OVERRIDE) rl = runCLIBot();
-					console.log("\n Everything booted correctly!")
-					console.log(TEXTBAR_SINGLE)
-					if(CONSOLE_CHAT_OVERRIDE) console.log('\x1b[35m%s\x1b[0m'," Chat Override Enabled: now parsing non-user-specific commands:");
-          serverState = 1;
-					rl.prompt();
-					// Exit interval
+					log("\n Everything booted correctly!",true)
+					util.logBar(1,true)
+			        serverState = 1;
+					if(CONSOLE_CHAT_OVERRIDE) {
+						rl = runCLIBot();
+						console.log('\x1b[35m' + ' Chat Override Enabled: now parsing non-user-specific commands:' + '\x1b[0m');
+					}
+					// Next Step
+					if(CHATBOT_ENABLED){
+						serverState = 1;
+						chatbot.checkSetup();
+					} 
+					else clearInterval(intervalObj);
+				}
+				break;
+			case 1:
+				if(chatbot.isReady()){
+					util.logBar(1,true);
 					clearInterval(intervalObj);
 				}
-					// console.log( serverOK + ' '+ chatbotOK +' '+ databaseOK)
 				break;
 			default:
 				break;
@@ -64,13 +74,13 @@ function runCLIBot() {
   });
   
   rl.on('line', (line) => {
-    console.log(`Received: ${line}`);
+    log(`Received: ${line}`,true);
     rl.prompt();
+    if(line.substring(0,6) == 'jester')
+    	{ log('you found me!',true)}
   });
   
-  console.log('\x1b[32m%s\x1b[0m%s\x1b[0m',
-  				' ✓',' CLI Bot Now Active'
-  				);
+  log('\x1b[32m' + ' ✓' + '\x1b[0m'+ ' CLI Bot Now Active' + '%s\x1b[0m');
   cliBotBooted = true;
   return rl;
 }

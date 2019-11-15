@@ -1,3 +1,5 @@
+const log = require('./util/util.js').log;
+
 require('dotenv').config()
 
 let databaseBooted = false;
@@ -19,68 +21,84 @@ const client = new MongoClient(mongoUrl, {
 });
 
 client.connect((err, database) => {
-	if (err) return console.log (err)
-	console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
-		' ✓',
-		' Connected to the databse as ', MONGO_UN)
+	if (err) return log (err, true)
+	log('\x1b[32m'+
+		' ✓' +
+		'\x1b[0m' +
+		' Connected to the databse as ' +
+		'\x1b[7m' +
+		 MONGO_UN +
+		'\x1b[0m',
+		true)
 	db = client.db('loom')	
 	databaseBooted = true;
 })
-console.log('  MongoDB connection initializing...');
+log('  MongoDB connection initializing...', true);
 
 function getFullCollectionArray(collectionName) {
-	console.log('grabbing collection: ' + collectionName);
+	log('grabbing collection: ' + collectionName, true);
 	return new Promise((resolve, reject) => {
 		db.collection(collectionName,{strict:true}, (err, col) => {
-			if(err) return console.log(err);
+			if(err) return log(err, true);
 			resolve(col.find().toArray());
 		});
 	});
+}
+
+function getElementIn(request, collection) {
+	log('looking for entry in '+collection,true);
+	return new Promise((resolve,reject) => {
+		db.collection(collection).find(request, (err, res) => {
+			if(err) return log(err, true);
+			resolve(res.toArray());
+		})
+	})
 }
 
 function getMonsterArray() {
 	return getFullCollectionArray('monsters');
 }
 
-function addMonster(request) {
-	console.log('adding monster');
+function addEntry(request,collection) {
+	log('adding entry to '+ collection, true);
 	return new Promise((resolve, reject) => {
-		db.collection('monsters',{strict:true}, (err, col) => {
-			if(err) return console.log(err);
+		db.collection(collection,{strict:true}, (err, col) => {
+			if(err) return log(err, true);
 			col.insertOne(request, (err, result) => {
-				if (err) return console.log(err);
-				resolve("Successfully added a monster!");
+				if (err) return log(err, true);
+				resolve("Successfully added an entry to " + collection + "!");
 			});
 		});
 	});
 }
 
 function editMonster(filter, update, options) {
-	console.log('updating monster');
+	log('updating monster', true);
 	return new Promise((resolve,reject) => {
 		db.collection('monsters')
 		.updateOne(filter,update,options,
 	  	(err, result) => {
-	    	if (err) return console.log(err);
+	    	if (err) return log(err, true);
 	    	if(result.modifiedCount > 0)
-	    		console.log("Success! " +
+	    		log("Success! " +
 	    			result.modifiedCount +
-	    			" etnries were modified");
+	    			" etnries were modified",
+	    			true);
 	    	else
-	    		console.log("Everything went through but nothing was modified.")
+	    		log("Everything went through but nothing was modified.", true)
 	    	resolve(result)
 	  	})
 	})
 }
 
 function deleteMonster(filter, options) {
-	console.log('deleting monster');
+	log('deleting monster', true);
 	return new Promise((resolve, reject) => {
 		db.collection('monsters',{strict:true}, (err, col) => {
-			if(err) return console.log(err);
+			if(err) return log(err, true);
 			col.deleteOne(filter, (err, result) => {
-				if (err) return console.log(err);
-				console.log('deleted '+result.deletedCount+'entries')
+				if (err) return log(err, true);
+				log('deleted '+result.deletedCount+'entries', true)
 				if(result.deletedCount == 1)
 					resolve("Successfully deleted a monster!");
 				else if (result.deletedCount == 0)
@@ -91,33 +109,33 @@ function deleteMonster(filter, options) {
 }
 
 function runCommand(command, options) {
-	console.log('running command on remote Db:');
-	console.log(command)
+	log('running command on remote Db:', true);
+	log(command, true)
 	return new Promise((resolve, reject) => {
 		db.command(command, options, (err, result) => {
-			if(err) return console.log(err);
+			if(err) return log(err, true);
 			else resolve('great success!');
 		});
 	});
 }
 
 function getCollectionInformation(targetCollection) {
-	console.log('Attempting to get information on the collection: '+targetCollection);
+	log('Attempting to get information on the collection: '+targetCollection, true);
 	return new Promise((resolve,reject) => {
 		db.getCollectionInfos( {name: targetCollection}, (resolve, reject) => {
-			if(err) return console.log(err);
+			if(err) return log(err, true);
 			else reslove(result);
 		});
 	})	
 }
 
 function newColl(collname) {
-	console.log('Attempting to make a new collection named '+ collname);
+	log('Attempting to make a new collection named '+ collname, true);
 	return new Promise(( resolve,reject) => {
 		db.createCollection(collname).then(result => {
 			resolve(result)
 	 		}, reason => {
-	 		console.log(reason);
+	 		log(reason, true);
 	 		}
 		)
 	})
@@ -130,9 +148,11 @@ function databaseReady() {
 module.exports = {
 	databaseReady,
 	getMonsterArray,
-	addMonster,
+	addEntry,
 	editMonster,
 	deleteMonster,
 	runCommand,
-	newColl
+	newColl,
+	getFullCollectionArray,
+	getElementIn
 }

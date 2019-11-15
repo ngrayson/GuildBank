@@ -1,3 +1,5 @@
+const log = require('../util/util.js').log;
+
 require('dotenv').config({path: '/../.env'})
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -15,13 +17,18 @@ function run() {
   	webApp.set('view engine', 'ejs')
   
   	webApp.listen(PORT, () => {
-  		console.log('\x1b[32m%s\x1b[0m%s\x1b[7m%s\x1b[0m',
-  			' ✓',
-  			' Webserver listening on port ', PORT);
+  		log('\x1b[32m' + 
+  			' ✓' +
+  			'\x1b[0m' +
+  			' Webserver listening on port ' +
+  			'\x1b[7m' +
+  			PORT +
+  			'\x1b[0m',
+  			true);
   		webserverReady = true;
   	})
   	webApp.use(router);
-  	console.log('  Webserver app initializing...');
+  	log('  Webserver app initializing...', true);
   }
 }
 
@@ -44,7 +51,7 @@ router.use(bodyParser.urlencoded({extended: true}))
 router.use(bodyParser.json())
 
 router.use((req, res, next) => {
-	console.log('Request type:' + req.method);
+	log('Request type:' + req.method, true);
 	next();
 });
 
@@ -52,25 +59,25 @@ router.use((req, res, next) => {
 router.get('/', function(request, response) {
 	db.getMonsterArray().then((results) => {
 		response.render('index.ejs',{monsters: results})
-		console.log(results.length + ' monsters!')
+		log(results.length + ' monsters!', true)
 	}).catch(function(err) {
-		console.log('ERROR: unable to get monsters from DB')
-		console.log(err)
+		log('ERROR: unable to get monsters from DB', true)
+		log(err, true)
 	});
 })
 
 // append request
 router.post('/monsters', (request, response) => {
-	console.log("monster recieved");
-	console.log(request.body);
-	db.addMonster(request.body).then((successMessage) => {
-		console.log(successMessage);
+	log("monster recieved", true);
+	log(request.body, true);
+	db.addEntry(request.body,'monsters').then((successMessage) => {
+		log(successMessage, true);
 		response.redirect('/');
 	});
 })
 
 router.post('/validator', (request,response) => {
-	console.log("validation update request recieved");
+	log("validation update request recieved", true);
 
 	let newDbName = 'characters';
 
@@ -101,8 +108,8 @@ router.put('/monsters', (request, response) => {
     	// response.redirect('/');
     }, err => {
     	response.send(err);
-    	console.log("ERROR Updating Monster");
-    	console.log(err);
+    	log("ERROR Updating Monster", true);
+    	log(err,true);
     })
 })
 
@@ -120,8 +127,8 @@ router.delete('/monsters', (request, response) => {
 		response.redirect('/');
     }, err => {
     	response.send(err);
-    	console.log("ERROR Deleting Monster");
-    	console.log(err);
+    	log("ERROR Deleting Monster", true);
+    	log(err, true);
     })
 })
 

@@ -78,7 +78,8 @@ function runCLIBot() {
     rl.prompt();
     if(line.substring(0,6) == 'jester') {
     	log('you found me!',true)
-
+    	// dbModify = require('./db/db_schema_modify.js');
+    	// dbModify();
 	}
   });
   

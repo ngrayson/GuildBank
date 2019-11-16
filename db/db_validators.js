@@ -136,5 +136,6 @@ let monstersValidator = {
 module.exports ={
 	monstersValidator,
 	playersValidator,
-   charactersValidator
+   charactersValidator,
+   sessionsValidator
 }

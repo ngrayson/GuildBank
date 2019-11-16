@@ -16,7 +16,7 @@ log(' Starting Loom...\n',true);
 
 const db = require('./db.js');
 const chatbot = require('./chatbot/botserver.js');
-const webserver = require('./server/webserver.js');
+const webserver = require('./webserver/webserver.js');
 
 let serverState = 0;
 
@@ -76,8 +76,10 @@ function runCLIBot() {
   rl.on('line', (line) => {
     log(`Received: ${line}`,true);
     rl.prompt();
-    if(line.substring(0,6) == 'jester')
-    	{ log('you found me!',true)}
+    if(line.substring(0,6) == 'jester') {
+    	log('you found me!',true)
+
+	}
   });
   
   log('\x1b[32m' + ' ✓' + '\x1b[0m'+ ' CLI Bot Now Active' + '%s\x1b[0m');

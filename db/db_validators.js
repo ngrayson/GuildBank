@@ -48,16 +48,40 @@ let sessionsValidator = {
 		validator: {
 			$jsonSchema: {
 				bsonType: "object",
-         		required: [ "name", "special" ], 
+         		required: [ "DateTime"], 
          		properties: { 
             		name: { 
-               			bsonType: "string", 
+               			bsonType: "date", 
                			description: "required and must be a string"
                		}, 
-            		special: { 
-               			bsonType: "string", 
-               			description: "required and must be a string"
-               		}
+                  dungeonMaster: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  playLocation: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  maxPlayers: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  enrolledPlayers: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  recapWriter: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  adventure: { 
+                        bsonType: "string", 
+                        description: "optional and must be a string"
+                     }, 
+                  status: { 
+                        bsonType: "int", 
+                        description: "optional and must be an integer.\n 0 - building\n 1 - adventuring\n 2 - completed"
+                     }
          		}
        		}
 		},	

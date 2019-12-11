@@ -1,4 +1,4 @@
-let charactersValidator = {
+let characters = {
 		collMod: 'characters',
 		validator: {
 			$jsonSchema: {
@@ -43,7 +43,7 @@ let charactersValidator = {
 		validationAction: "error" 
 	}
 
-let sessionsValidator = {
+let sessions = {
 		collMod: 'sessions',
 		validator: {
 			$jsonSchema: {
@@ -89,7 +89,7 @@ let sessionsValidator = {
 		validationAction: "error" 
 	}
 
-let playersValidator = {
+let players = {
 		collMod: 'players',
 		validator: {
 			$jsonSchema: {
@@ -100,9 +100,9 @@ let playersValidator = {
                			bsonType: "string", 
                			description: "required and must be a string"
                		}, 
-            		_id: { 
-               			bsonType: "objectId", 
-               			description: "required and must be an objectId"
+            		discordId: { 
+               			bsonType: "string", 
+               			description: "required and must be a string"
                		}
          		}
        		}
@@ -111,7 +111,7 @@ let playersValidator = {
 		validationAction: "error" 
 	}
 
-let monstersValidator = {
+let monsters = {
 		collMod: 'monsters',
 		validator: {
 			$jsonSchema: {
@@ -134,8 +134,8 @@ let monstersValidator = {
 	}
 
 module.exports ={
-	monstersValidator,
-	playersValidator,
-   charactersValidator,
-   sessionsValidator
+	monsters,
+	players,
+   characters,
+   sessions
 }

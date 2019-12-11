@@ -2,52 +2,75 @@ const log = require('../util/util.js').log;
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
+const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
 
 let chatbotReady = false;
 
-const client = new Discord.Client();
+const bot = new Discord.Client({disableEveryone: true});
+bot.commands = new Discord.Collection();
+
+fs.readdir('./chatbot/cmds/', (err, files) => {
+	if(err) throw err;
+
+	let jsfiles = files.filter(f => f.split(".").pop() === "js");
+	if(jsfiles.length <= 0) {
+		log("No commands to load!", true);
+		return;
+	}
+
+	log(`Loading ${jsfiles.length} commands!`,true);
+
+	jsfiles.forEach((f, i) => {
+		let props = require(`./cmds/${f}`);
+		log(`${i+1}: ${f} loaded!`,true);
+		bot.commands.set(props.help.name, props);
+	});
+})
+
+
 
 function run() {
   if(CHATBOT_ENABLED) {
 		const token = process.env.DBOT_TOKEN;
 
-		client.on('ready', () => {
+		bot.on('ready', () => {
 			log('\x1b[32m'+
 				' ✓' +
 				'\x1b[0m'+
 				' Discord Bot logged in under ' +
 				'\x1b[7m'+
-				client.user.tag+
+				bot.user.tag+
 				'\x1b[0m',
 				true);
 			chatbotReady = true;
+			log(bot.commands,true);
 		});
 
-		client.on('message', msg => {
+		bot.on('message', async msg => {
 			message(msg);
 		})
 
-		client.on('error', err => {
+		bot.on('error', err => {
 			log('\x1b[31m',true)
 			log(err.error, true)
 			if(Object.entries(err.error)[0][1] == 'SELF_SIGNED_CERT_IN_CHAIN') {
 				log('\nBot was blocked by a certificate issue, may be a firewall problem.' +
 					'\n shutting bot down.', true)
-				// client.destroy().then(() => {
-				// 	log(' Discord bot client shut down successful.', true)
+				// bot.destroy().then(() => {
+				// 	log(' Discord bot bot shut down successful.', true)
 				// });
 			}
 			log('\x1b[0m',true)
 		});
 
-		client.on('reconnecting', msg => {
+		bot.on('reconnecting', msg => {
 			log('Discord Bot attempting to reconnect...',true)
 		})
 
-		client.login(token)
-		  .then(log('  Discord client logging in...',true))
+		bot.login(token)
+		  .then(log('  Discord bot logging in...',true))
 		  .catch(console.error);
 
   }
@@ -59,10 +82,24 @@ function isReady() {
 
 function checkSetup() {
 	chatbotReady = false;
-	guildManager.checkGuilds(client).then(chatbotReady = true);
+	guildManager.checkGuilds(bot).then(chatbotReady = true);
 }
 
 function message(msg) {
+	let prefix = '!';
+
+	if (msg.author.bot) return;
+	if (msg.channel.type === "dm") return;
+
+	let messageArray = msg.content.split(/\s+/g);
+	let command = messageArray[0];
+	let args = messageArray.slice(1);
+	if(!command.startsWith(prefix)) return;
+
+	let cmd = bot.commands.get(command.slice(prefix.length));
+
+	if(cmd) cmd.run(bot, msg, args);
+
 	log('recieved Discord message from ' + msg.author.username + ':',true);
 	log('  |' + msg.content,true)
 }

@@ -39,7 +39,7 @@ function getInactiveGuilds(){
 
 function checkGuilds(client){
 	return new Promise((resolve,reject) => {
-		// pull all connected guilds frombot
+		// pull all connected guilds from bot
 		let connectedGuilds = getConnectedGuilds(client).array();
 		// pull all initialized guilds from DB (promise)
 		let initializedGuilds;

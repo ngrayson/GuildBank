@@ -48,7 +48,7 @@ function getFullCollectionArray(collectionName) {
 
 // this request object is a list of key/value pairs to match
 function getElementIn(request, collection) {
-	log('looking for entry in '+collection,true);
+	log('looking for entry in '+collection);
 	return new Promise((resolve,reject) => {
 		db.collection(collection).find(request, (err, res) => {
 			if(err) {

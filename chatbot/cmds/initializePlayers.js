@@ -39,8 +39,9 @@ module.exports.run = async(bot, message, args) => {
 	let successes = [];
 	let failures = [];
 
-	members.forEach(member => {
 
+	for( memberIndex = 0; memberIndex < members.array().length; memberIndex++) {
+		member=members.array()[memberIndex];
 		let newPlayer = {
 			discordHandle: member.nickname ? member.nickname : member.user.username,
 			discordId: member.id
@@ -49,7 +50,8 @@ module.exports.run = async(bot, message, args) => {
 		if(member.roles.some(role => role.name == 'DnD Player')) {
 			log(`${newPlayer.discordHandle} has the DnD Player Role!`)
 			roledMembers++;
-			players.initializePlayer(newPlayer).then(res =>{
+			
+			await players.initializePlayer(newPlayer).then(res =>{
 				log(`initialized player ${newPlayer.discordHandle}`,true)
 				toBeInitialized++;
 				successes.push(newPlayer.discordHandle);
@@ -57,22 +59,30 @@ module.exports.run = async(bot, message, args) => {
 				log(err,true);
 				if(err.search(`LOOMERROR: player already initialized`) != -1){
 					alreadyInitialized++;
+					log('alreadyInitialized: ' + alreadyInitialized,true)
 				}
 				else{
 					failures.push(newPlayer.discordHandle);
+					log(failures,true)
 				}
 			});
+
 		}
 		else 
 			rolelessMembers++;
-	})
+		if(memberIndex == members.array().length) {
 
-	report += `totalMembers: ${totalMembers}\n`+
-				`rolelessMembers: ${rolelessMembers}\n`+
-				`roledMembers: ${roledMembers}\n`+
-				`alreadyInitialized: ${alreadyInitialized}\n`+
-				`toBeInitialized: ${toBeInitialized}\n`+
-				`successes: ${successes.length}\n`+
-				`failures: ${failures.length}\n`;
+		}
+	}
+
+	report += 'totalMembers: ' + totalMembers + '\n'+
+				'rolelessMembers: ' + rolelessMembers + '\n'+
+				'roledMembers: ' + roledMembers + '\n'+
+				'alreadyInitialized: ' + alreadyInitialized + '\n'+
+				'toBeInitialized: ' + toBeInitialized + '\n'+
+				'successes: ' + successes.length + '\n'+
+				'failures: ' + failures.length + '\n';
+	log(report,true)
+	log('alreadyInitialized: ' + alreadyInitialized,true)
 	let msg = await message.channel.send(report);
 }

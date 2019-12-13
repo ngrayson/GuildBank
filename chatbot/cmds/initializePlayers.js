@@ -3,7 +3,7 @@ const log = require('../../util/util.js').log;
 
 module.exports.help = {
 	name: 'initializePlayer',
-	description: 'initializes a user as a game player'
+	description: 'attempts to initialize all members with correct player tag as DnD'
 }
 
 module.exports.permissions = {
@@ -14,7 +14,24 @@ module.exports.permissions = {
 
 module.exports.run = async(bot, message, args) => {
 
-	log(args);
+	// log(args);
+	// // check to see if discord ID is valid
+	// let guild = bot.guilds.get(message.guild);
+	// let discordId = args[0];//message.author.id;
+	// if(!guild.member(discordId))
+	// {
+	// 	message.channel.send(`${discordId} is not a valid discord ID, no player initialized`);
+	// }
+
+	// // check to see if name is valid
+	// let newPlayer = {
+	// 	name: 'name',
+	// 	discord: 'discord'
+	// }
+
+
+
+
 
 	// let msg = await message.channel.send("generating server icon...")
 

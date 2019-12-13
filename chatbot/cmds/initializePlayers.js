@@ -72,7 +72,7 @@ module.exports.run = async(bot, message, args) => {
 				`roledMembers: ${roledMembers}\n`+
 				`alreadyInitialized: ${alreadyInitialized}\n`+
 				`toBeInitialized: ${toBeInitialized}\n`+
-				`successes: ${successes}\n`+
-				`failures: ${failures}\n`;
+				`successes: ${successes.length}\n`+
+				`failures: ${failures.length}\n`;
 	let msg = await message.channel.send(report);
 }

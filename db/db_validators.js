@@ -94,16 +94,20 @@ let players = {
 		validator: {
 			$jsonSchema: {
 				bsonType: "object",
-         		required: [ "name", "_id" ], 
+         		required: [ "discordId" ], 
          		properties: { 
             		name: { 
                			bsonType: "string", 
-               			description: "required and must be a string"
+               			description: "optional and must be a string"
                		}, 
             		discordId: { 
                			bsonType: "string", 
                			description: "required and must be a string"
-               		}
+               		},
+                  active: {
+                        bsonType: "bool",
+                        description: "required and must be a boolean. indicates if the player is currently active"
+                  }
          		}
        		}
 		},	

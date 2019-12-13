@@ -8,16 +8,26 @@ module.exports.help = {
 }
 
 module.exports.permissions = {
-	admin: true,
-	dm: false,
-	player: false
+	userPermissions: {
+		admin: true,
+		dm: false,
+		player: false
+	},
+	locationPermissions: {
+		activeGuild: true,
+		passiveGuild: false,
+		inactiveGuild: false,
+		directMessage: true
+	}
 }
 
 module.exports.run = async(bot, message, args) => {
 	let msg = await message.channel.send("attempting to modify schema...")
-	try {
-		let playerArray = await schemaModify(args[0]).then(msg.edit(`Modified ${args[0]} successfully!`));
-	} catch (e) {
-		log(e, true)
-	}
+	schemaModify(args[0]).then( () => {
+		msg.edit(`Modified ${args[0]} successfully!`);
+	}).catch(err => {
+		log(err, true)
+		msg.edit(`issue modifying ${args[0]}: ${err}`);
+	})
+	
 }

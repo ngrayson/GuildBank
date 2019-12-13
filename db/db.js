@@ -45,11 +45,15 @@ function getFullCollectionArray(collectionName) {
 	});
 }
 
+
+// this request object is a list of key/value pairs to match
 function getElementIn(request, collection) {
 	log('looking for entry in '+collection,true);
 	return new Promise((resolve,reject) => {
 		db.collection(collection).find(request, (err, res) => {
-			if(err) return log(err, true);
+			if(err) {
+				return log(err, true);
+			}
 			resolve(res.toArray());
 		})
 	})
@@ -59,13 +63,19 @@ function getMonsterArray() {
 	return getFullCollectionArray('monsters');
 }
 
-function addEntry(request,collection) {
+function addEntry(newObj,collection) {
 	log('adding entry to '+ collection, true);
 	return new Promise((resolve, reject) => {
 		db.collection(collection,{strict:true}, (err, col) => {
-			if(err) return log(err, true);
-			col.insertOne(request, (err, result) => {
-				if (err) return log(err, true);
+			if(err) {
+				log(`ERROR adding entry to ${collection}, collection error`, true)
+				return log(err, true);
+			}
+			col.insertOne(newObj, (err, result) => {
+				if (err) {
+					log(`ERROR adding entry to ${collection}`,true)
+					reject(err)
+				}
 				resolve("Successfully added an entry to " + collection + "!");
 			});
 		});
@@ -113,7 +123,7 @@ function runCommand(command, options) {
 	log(command, true)
 	return new Promise((resolve, reject) => {
 		db.command(command, options, (err, result) => {
-			if(err) return log(err, true);
+			if(err) reject(err);
 			else resolve('great success!');
 		});
 	});

@@ -90,6 +90,7 @@ function checkSetup() {
 }
 
 function message(msg) {
+
 	let prefix = '!';
 
 	if (msg.author.bot) return;
@@ -102,10 +103,10 @@ function message(msg) {
 
 	let cmd = bot.commands.get(command.slice(prefix.length));
 
-	if(cmd) cmd.run(bot, msg, args);
-
 	log('recieved Discord message from ' + msg.author.username + ':',true);
 	log('  |' + msg.content,true)
+
+	if(cmd) cmd.run(bot, msg, args);
 }
 
 function memberUpdate(oldMember,newMember){

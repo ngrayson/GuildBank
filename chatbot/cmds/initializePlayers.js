@@ -1,48 +1,78 @@
-const db = require('../../db/db.js');
+const players = require('../../db/playermanager.js');
 const log = require('../../util/util.js').log;
 
 module.exports.help = {
-	name: 'initializePlayer',
-	description: 'attempts to initialize all members with correct player tag as DnD'
+	name: 'initializePlayers',
+	description: 'attempts to initialize all members of current guild with the correct role'
 }
 
 module.exports.permissions = {
-	admin: true,
-	dm: false,
-	player: false
+	userPermissions: {
+		admin: true,
+		dm: false,
+		player: false
+	},
+	locationPermissions: {
+		activeGuild: true,
+		passiveGuild: false,
+		inactiveGuild: false,
+		directMessage: true
+	}
 }
 
 module.exports.run = async(bot, message, args) => {
 
-	// log(args);
-	// // check to see if discord ID is valid
-	// let guild = bot.guilds.get(message.guild);
-	// let discordId = args[0];//message.author.id;
-	// if(!guild.member(discordId))
-	// {
-	// 	message.channel.send(`${discordId} is not a valid discord ID, no player initialized`);
-	// }
 
-	// // check to see if name is valid
-	// let newPlayer = {
-	// 	name: 'name',
-	// 	discord: 'discord'
-	// }
+	let guilds = bot.guilds;
+	guild = guilds.get(message.guild.id);
+	log('guild:');
+	log(guild);
+	let members = guild.members;
 
+	let report = '';
 
+	let totalMembers = members.array().length;
+	let rolelessMembers = 0;
+	let roledMembers = 0;
+	let alreadyInitialized = 0;
+	let toBeInitialized = 0;
+	let successes = [];
+	let failures = [];
 
+	members.forEach(member => {
 
+		let newPlayer = {
+			discordHandle: member.nickname ? member.nickname : member.user.username,
+			discordId: member.id
+		}
 
-	// let msg = await message.channel.send("generating server icon...")
+		if(member.roles.some(role => role.name == 'DnD Player')) {
+			log(`${newPlayer.discordHandle} has the DnD Player Role!`)
+			roledMembers++;
+			players.initializePlayer(newPlayer).then(res =>{
+				log(`initialized player ${newPlayer.discordHandle}`,true)
+				toBeInitialized++;
+				successes.push(newPlayer.discordHandle);
+			}).catch(err => {
+				log(err,true);
+				if(err.search(`LOOMERROR: player already initialized`) != -1){
+					alreadyInitialized++;
+				}
+				else{
+					failures.push(newPlayer.discordHandle);
+				}
+			});
+		}
+		else 
+			rolelessMembers++;
+	})
 
-	// if(!message.guild.iconURL) return msg.edit('This server has no icon')
-
-	// await message.channel.send({files: [
-	// 	{
-	// 		attachment: message.author.guild.iconURL,
-	// 		name: "icon.png"
-	// 	}
-	// ]})
-
-	// msg.delete();
+	report += `totalMembers: ${totalMembers}\n`+
+				`rolelessMembers: ${rolelessMembers}\n`+
+				`roledMembers: ${roledMembers}\n`+
+				`alreadyInitialized: ${alreadyInitialized}\n`+
+				`toBeInitialized: ${toBeInitialized}\n`+
+				`successes: ${successes}\n`+
+				`failures: ${failures}\n`;
+	let msg = await message.channel.send(report);
 }

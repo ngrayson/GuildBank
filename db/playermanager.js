@@ -1,0 +1,39 @@
+const log = require('../util/util.js').log;
+const db = require('./db.js');
+
+async function initializePlayer(newPlayer){
+
+	if (!newPlayer.hasOwnProperty('discordId')) throw 'players require a valid discord Id';
+
+	log(newPlayer,true)
+
+	let player = {
+		name: 'name' in newPlayer ? newPlayer.name : 'null',
+		discordHandle: 'discordHandle' in newPlayer ? newPlayer.discordHandle : 'null',
+		discordId: newPlayer.discordId,
+		active: true
+	}
+
+	//check to see if player already exists
+	let playerSearch = await db.getElementIn({discordId: newPlayer.discordId} ,'players') 
+	if(playerSearch.length > 0) {
+		throw `LOOMERROR: player already initialized: ${player.discordHandle}`;
+	}
+	else{
+		
+		try {
+			log( `typeof ${typeof player.discordId}`,true)
+			let res = db.addEntry(player, 'players')
+			if(await res)
+				log(`successfully initialized player ${player.discordId}[${player.discordHandle}]`)
+		} catch (err) {	
+			log('ERROR initializing player:',true)
+			log(player,true)
+			throw err;
+		}
+	}
+}
+
+module.exports = {
+	initializePlayer
+}

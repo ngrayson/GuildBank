@@ -7,9 +7,17 @@ module.exports.help = {
 }
 
 module.exports.permissions = {
-	admin: true,
-	dm: true,
-	player: false
+	userPermissions: {
+		admin: true,
+		dm: true,
+		player: false
+	},
+	locationPermissions: {
+		activeGuild: true,
+		passiveGuild: false,
+		inactiveGuild: false,
+		directMessage: true
+	}
 }
 
 module.exports.run = async(bot, message, args) => {

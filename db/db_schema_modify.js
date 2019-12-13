@@ -9,21 +9,21 @@ function updateCollectionValidator(collname) {
 			log('updating the following validator:')
 			log(validators[collname]);
 
-
 			let command = validators[collname];
-			return new Promise((resolve, reject) => {
-				db.runCommand(command).then(result => {
-					resolve(result)
-					log(result);
-				}, reason => {
-					log(error,true);
-				})
+
+			db.runCommand(command).then(result => {
+				resolve(result)
+				log(result);
+			}).catch(error => {
+				log('ERROR with updating validators' ,true);
+				reject(error)
 			})
+			
 		}
 		
 		else{
 			log(`ERROR: no validators with the name ${collname} was found`,true);
-			throw `ERROR: attempted to use a validator that does not exist`;
+			reject(`ERROR: attempted to use a validator that does not exist`);
 		}
 	})
 

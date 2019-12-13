@@ -17,7 +17,15 @@ module.exports.help = {
 }
 
 module.exports.permissions = {
-	admin: true,
-	dm: true,
-	player: true
+	userPermissions: {
+		admin: true,
+		dm: true,
+		player: true
+	},
+	locationPermissions: {
+		activeGuild: true,
+		passiveGuild: false,
+		inactiveGuild: false,
+		directMessage: true
+	}
 }

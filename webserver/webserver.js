@@ -5,7 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 
 const WEBSERVER_ENABLED = process.env.WEBSERVER_ENABLED == 1;
-const db = require('../db.js');
+const db = require('../db/db.js');
 const dbModify = require('../db/db_schema_modify.js');
 
 let webserverReady = false;

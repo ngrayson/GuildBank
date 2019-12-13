@@ -1,4 +1,4 @@
-const db = require('../db.js');
+const db = require('./db.js');
 const validators = require('./db_validators.js')
 const log = require('../util/util.js').log;
 const util = require('../util/util.js');
@@ -20,6 +20,7 @@ function updateCollectionValidator(collname) {
 				})
 			})
 		}
+		
 		else{
 			log(`ERROR: no validators with the name ${collname} was found`,true);
 			throw `ERROR: attempted to use a validator that does not exist`;

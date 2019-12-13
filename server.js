@@ -14,7 +14,7 @@ log('\x1b[36m','\n\n',true);
 util.logBar(2,true);
 log(' Starting Loom...\n',true);
 
-const db = require('./db.js');
+const db = require('./db/db.js');
 const chatbot = require('./chatbot/botserver.js');
 const webserver = require('./webserver/webserver.js');
 

@@ -1,7 +1,7 @@
 // guildmanager.js
 // manages which guilds this bot is present on
 const log = require('../util/util.js').log;
-const db = require('../db.js')
+const db = require('../db/db.js')
 
 // guilds can either be
 //  - not initialized

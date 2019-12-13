@@ -1,4 +1,4 @@
-const db = require('../../db.js');
+const db = require('../../db/db.js');
 const log = require('../../util/util.js').log;
 const schemaModify = require('../../db/db_schema_modify.js');
 

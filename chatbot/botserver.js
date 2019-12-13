@@ -52,6 +52,10 @@ function run() {
 			message(msg);
 		})
 
+		bot.on('guildMemberUpdate', (oldMember,newMember) => {
+			memberUpdate(oldMember,newMember);
+		})
+
 		bot.on('error', err => {
 			log('\x1b[31m',true)
 			log(err.error, true)
@@ -102,6 +106,12 @@ function message(msg) {
 
 	log('recieved Discord message from ' + msg.author.username + ':',true);
 	log('  |' + msg.content,true)
+}
+
+function memberUpdate(oldMember,newMember){
+	// find difference in roles
+	// if DnD player role was added, initialize player
+	// if DnD player role was removed, mark player as inactive.
 }
 
 function rootMessage(msg) {

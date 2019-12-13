@@ -1,4 +1,4 @@
-const log = require('./util/util.js').log;
+const log = require('../util/util.js').log;
 
 require('dotenv').config()
 

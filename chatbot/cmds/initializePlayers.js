@@ -66,7 +66,6 @@ module.exports.run = async(bot, message, args) => {
 					log(failures,true)
 				}
 			});
-
 		}
 		else 
 			rolelessMembers++;

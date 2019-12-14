@@ -15,8 +15,7 @@ async function initializePlayer(newPlayer){
 	}
 
 	//check to see if player already exists
-	let playerSearch = await db.getElementIn({discordId: newPlayer.discordId} ,'players') 
-	if(playerSearch.length > 0) {
+	if(await isInitialized( newPlayer.discordId)) {
 		throw `LOOMERROR: player already initialized: ${player.discordHandle}`;
 	}
 	else{
@@ -34,6 +33,17 @@ async function initializePlayer(newPlayer){
 	}
 }
 
+async function isInitialized(id){
+	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
+
+	log(`checking if player with id ${id} is initialized..`)
+	log(playerSearch)
+	log(playerSearch.length > 0)
+
+	return playerSearch.length > 0
+}
+
 module.exports = {
-	initializePlayer
+	initializePlayer,
+	isInitialized
 }

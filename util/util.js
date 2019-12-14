@@ -35,7 +35,43 @@ function logBar(style, logToCLI) {
 	if(logToCLI) console.log(str);
 }
 
+// returns the symmetric difference between a number of collections as an arry
+function symDiff() {
+    var sets = [], result = [];
+    // make copy of arguments into an array
+    var args = Array.prototype.slice.call(arguments, 0);
+    // put each array into a set for easy lookup
+    args.forEach(function(coll) {
+        sets.push(new Set(coll.array()));
+    });
+    // now see which elements in each array are unique 
+    // e.g. not contained in the other sets
+    args.forEach(function(array, arrayIndex) {
+        // iterate each item in the array
+        array.forEach(function(item) {
+            var found = false;
+            // iterate each set (use a plain for loop so it's easier to break)
+            for (var setIndex = 0; setIndex < sets.length; setIndex++) {
+                // skip the set from our own array
+                if (setIndex !== arrayIndex) {
+                    if (sets[setIndex].has(item)) {
+                        // if the set has this item
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                result.push(item);
+            }
+        });
+    });
+    return result;
+}
+
+
 module.exports = {
 	log,
-	logBar
+	logBar,
+	symDiff
 }

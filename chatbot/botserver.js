@@ -5,11 +5,15 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
+const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
 
 let chatbotReady = false;
 
 const bot = new Discord.Client({disableEveryone: true});
 bot.commands = new Discord.Collection();
+
+
+// initialize commands
 
 fs.readdir('./chatbot/cmds/', (err, files) => {
 	if(err) throw err;
@@ -24,11 +28,10 @@ fs.readdir('./chatbot/cmds/', (err, files) => {
 
 	jsfiles.forEach((f, i) => {
 		let props = require(`./cmds/${f}`);
-		log(`${i+1}: ${f} loaded!`,true);
+		log(`command ${i+1}: ${f} loaded!`,true);
 		bot.commands.set(props.help.name, props);
 	});
 })
-
 
 
 function run() {
@@ -110,9 +113,17 @@ function message(msg) {
 }
 
 function memberUpdate(oldMember,newMember){
+	if(!oldMember.roles.equals(newMember.roles)) {
+		// the member update was a change in rolls
+		if(oldMember.roles.array().length < newMember.roles.array().length)
+			roleChange.newRole(oldMember,newMember);
+		else
+			roleChange.removedRole(oldMember,newMember);
+	}
 	// find difference in roles
 	// if DnD player role was added, initialize player
 	// if DnD player role was removed, mark player as inactive.
+
 }
 
 function rootMessage(msg) {

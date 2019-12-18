@@ -6,6 +6,7 @@ const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
 const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
+const token = process.env.DBOT_TOKEN;
 
 let chatbotReady = false;
 
@@ -36,7 +37,6 @@ fs.readdir('./chatbot/cmds/', (err, files) => {
 
 function run() {
   if(CHATBOT_ENABLED) {
-		const token = process.env.DBOT_TOKEN;
 
 		bot.on('ready', () => {
 			log('\x1b[32m'+

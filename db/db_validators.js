@@ -3,43 +3,48 @@ let characters = {
 		validator: {
 			$jsonSchema: {
 				bsonType: "object",
-         		required: [ "_id","character_name", "player_id", "date_created", "experience", "moneyCP", "resonite" ], 
+         		required: [ "character_name", "player_id", /*"date_created",*/ "experience", "moneyCP", "class", "subclass"], 
          		properties: { 
-         			_id: {
-         				bsonType: "objectId" 
-         			},
-            		character_name: { 
-               		bsonType: "string", 
-               		description: "required and must be a string"
+                  character_name_full: { 
+                     bsonType: "string", 
+                     description: "required and must be a string"
+                  },
+                  character_name_short: { 
+                     bsonType: "string", 
+                     description: "optional and must be a string"
                   }, 
             		player_id: { 
                		bsonType: "int", 
                		description: "required and must be an integer"
-               	},
+               	},/*
                	date_created: {
-               		bsonType: "timestamp",
+               		bsonType: "date",
                		description: "required and must be a timestamp"
-               	},
+               	},*/
                   experience: {
                      bsonType: "int",
                      description: "required and must be an integer"
                   },
-                  moneyCP: {
+                  moneyCp: {
                      bsonType: "int",
                      description: "required and must be an integer"
                   },
-                  resonite: {
+                  class: {
                      bsonType: "int",
                      description: "required and must be an integer"
                   },
-                  inventory: {
-                     bsonType: "object",
-                     description: "must be an object"
+                  subclass: {
+                     bsonType: "int",
+                     description: "required and must be an integer"
+                  },
+                  current_activity: {
+                     bsonType: "int",
+                     description: "required and must be an integer"
                   }
          		}
        		}
 		},	
-		validationLevel: "strict", 
+		validationLevel: "off", 
 		validationAction: "error" 
 	}
 
@@ -85,7 +90,7 @@ let sessions = {
          		}
        		}
 		},	
-		validationLevel: "strict", 
+		validationLevel: "off", 
 		validationAction: "error" 
 	}
 
@@ -111,7 +116,7 @@ let players = {
          		}
        		}
 		},	
-		validationLevel: "strict", 
+		validationLevel: "off", 
 		validationAction: "error" 
 	}
 
@@ -133,7 +138,7 @@ let monsters = {
          		}
        		}
 		},	
-		validationLevel: "strict", 
+		validationLevel: "off", 
 		validationAction: "error" 
 	}
 

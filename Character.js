@@ -1,37 +1,40 @@
 "use strict";
 
+const log = require('./util/util.js').log;
+const db = require('./db/db.js');
 
-levelThresholds = 
-[0,      300,    900,    2700,   6500,
+const levelThresholds = [
+ 0,      300,    900,    2700,   6500,
  14000,  23000,  34000,  48000,  64000,
  85000,  100000, 120000, 140000, 165000, 
  195000, 225000, 265000, 305000, 355000];
 
-charClass = {
+const charClass = {
 	BARBARIAN: 1,
 	BARD: 2
 }
 
-charSubclass = {
+const charSubclass = {
 	BARBARIAN: {
 		ZEALOT: 1,
 		BATTLERAGER: 2
 	}
 }
+	
+let characters = [];
 
 class Character {
 
-	static characters[];
 
-	nameFull = nameFull;
-	playerId = playerId;
-	nameShort = null;
-	dateCreated = new Date();
-	exp = 0;
-	moneyCp = 0;
-	charClass = null;
-	charSubclass = null;
-	currentActivity = null;
+	// nameFull = '';
+	// playerId = '';
+	// nameShort = null;
+	// dateCreated = new Date();
+	// experience = 0;
+	// moneyCp = 0;
+	// charClass = null;
+	// charSubclass = null;
+	// currentActivity = null;
 
 
 	constructor(nameFull,playerId) {
@@ -41,23 +44,24 @@ class Character {
 		// all of these should be functions that read from the db
 
 		this.nameFull = nameFull;
-		this.playerId = playerId; // make this private
-
-		this.nameShort = null; 
+		this._playerId = playerId; // make this private
+		this.nameShort = nameFull[0]; 
 		this.dateCreated = new Date(); // make this private
-		this.exp = 0; // make this private
+		this.experience = 0; // make this private
 		this.moneyCp = 0; // make this private
-		this.charClass = null; // make this private
-		this.charSubclass = null; // make this private
-		this.currentActivity = null; // make this private
+		this.charClass = -1; // make this private
+		this.charSubclass = -1; // make this private
+		this.currentActivity = -1; // make this private
 
 		characters.push(this);
+		sendCharacter(this);
+
 	}
 
-	constructor(characterFromDB){
+	// constructor(characterFromDB){
 
-		characters.push(this);
-	}
+	// 	characters.push(this);
+	// }
 	
 	// getters?
 	get moneyString() {
@@ -71,26 +75,36 @@ class Character {
 		
 		let copper = money;
 
-		moneyString += gold + ' gp'
-		moneyString += silver + ' sp'
+		moneyString += gold + ' gp, '
+		moneyString += silver + ' sp, '
 		moneyString += copper + ' cp'
+
+		return moneyString
 	}
 
 	// example static method
-	// call with Character.levelFromExp(exp)
-	static levelFromExp(exp) {
-		return levelFromExp(exp);
+	// call with Character.levelFromexperience(experience)
+	static levelFromExperience(experience) {
+		return levelFromExperience(experience);
 	}
 
 	static fetchAllCharacters() {
 
 	}
 
+	static allCharacters() {
+		return characters
+	}
+
+	static getByName(string) {
+
+	}
+
 	// all other methods
 	
-	addExp(amount) {
-		this.exp += amount;
-		return this.exp;
+	addExperience(amount) {
+		this.experience += amount;
+		return this.experience;
 	}
 
 	addResonite(amount){
@@ -106,22 +120,69 @@ class Character {
 	}
 
 	level(){
-		return levelFromExp(this.exp);
+		return levelFromExperience(this.experience);
 	}
 
-	set playerId(){ //interrupt the setting of playerId
-		throw 'cannot set playerId';
+	set playerId(playerId){ //interrupt the setting of playerId
+		if(this.playerId)
+			throw 'Illegal operation, cannot chaneg playerId';
+		else
+			this._playerId = playerId;
 	}
 }
 
-function levelFromExp(exp){
-	if (typeof exp != int)
-		throw 'cannot find level from a non-integer amount of exp'
+function levelFromExperience(experience){
+	if (typeof experience != int)
+		throw 'cannot find level from a non-integer amount of experience'
 	else {
-		 return levelThresholds.findIndex((element => element > exp)) + 1;
+		 return levelThresholds.findIndex((element => element > experience)) + 1;
 	}
 }
 
+function sendCharacter(character) {
+	log('sendCharacter:')
+	log('character class instance:',true)
+	log(character,true);
+	log('character object:',true)
+	let charObj = char2Object(character);
+	log(charObj,true)
+	log('character_name_full: ' + charObj.character_name_full ,true)
+	log(typeof charObj.character_name_full, true)
+	log('character_name_short: ' + charObj.character_name_short ,true)
+	log(typeof charObj.character_name_short, true)
+	log('player_id: ' + charObj.player_id ,true)
+	log(typeof charObj.player_id, true)
+	log('date_created: ' + charObj.date_created ,true)
+	log(typeof charObj.date_created, true)
+	log('experience: ' + charObj.experience ,true)
+	log(typeof charObj.experience, true)
+	log('moneyCp: ' + charObj.moneyCp ,true)
+	log(typeof charObj.moneyCp, true)
+	log('class: ' + charObj.class ,true)
+	log(typeof charObj.class, true)
+	log('subclass: ' + charObj.subclass ,true)
+	log(typeof charObj.subclass, true)
+	log('current_activity: ' + charObj.current_activity ,true)
+	log(typeof charObj.current_activity, true)
+	db.addEntry(charObj,'characters');
+}
+
+//turns a character class entity into an object, for storing in the database
+function char2Object(charClass) {
+	let charObj = {
+		character_name_full: charClass.nameFull,
+		character_name_short: charClass.nameShort,
+		player_id: charClass._playerId,
+		date_created: charClass.dateCreated,
+		experience: charClass.experience,
+		moneyCp: charClass.moneyCp,
+		class: charClass.charClass,
+		subclass: charClass.charSubclass,
+		current_activity: charClass.currentActivity	
+	}
+	return charObj;
+}
+		
 module.exports = {
 	charClass,
 	charSubclass,
@@ -129,7 +190,7 @@ module.exports = {
 }
 /*
 so I am writing a discord bot which uses mongoDB as a database
-I have a Player class for doing Player things (like add exp)
+I have a Player class for doing Player things (like add experience)
 in my mongoDB I have a Player collection so I can keep all that information up to date
 how do I decide what to store in memmory vs the database?
 I want the database to be the source of truth in case the server crashes or something happens
@@ -144,4 +205,3 @@ would that be stupid?
 
 This is such a high level infrastructure/architectural decision that I am not comfortable just doing something that works
 */
-

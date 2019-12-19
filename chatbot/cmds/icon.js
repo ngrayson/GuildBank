@@ -15,7 +15,8 @@ module.exports.run = async(bot, message, args) => {
 }
 
 module.exports.help = {
-	name: 'icon'
+	name: 'icon',
+	description: 'generates a the server icon and sends it to the user'
 }
 
 module.exports.permissions = {
@@ -28,6 +29,6 @@ module.exports.permissions = {
 		activeGuild: true,
 		passiveGuild: false,
 		inactiveGuild: false,
-		directMessage: true
+		directMessage: false
 	}
 }

@@ -97,7 +97,7 @@ function message(msg) {
 	let prefix = '!';
 
 	if (msg.author.bot) return;
-	if (msg.channel.type === "dm") return;
+	// if (msg.channel.type === "dm") return;
 
 	let messageArray = msg.content.split(/\s+/g);
 	let command = messageArray[0];
@@ -109,7 +109,25 @@ function message(msg) {
 	log('recieved Discord message from ' + msg.author.username + ':',true);
 	log('  |' + msg.content,true)
 
-	if(cmd) cmd.run(bot, msg, args);
+	if(cmd){
+		// check to see if user has permissions
+		// get user role
+		// get permissions from command
+		let cmdUserPerm = cmd.permissions.userPermissions;
+		// check to see if location has permissions
+			// get location 
+		let location = msg.channel.type;
+			// get permissions from command
+		let cmdLocationPerm = cmd.permissions.locationPermissions;
+		if(location == "dm") {
+			// msg was recieved in a DM
+			if(cmdLocationPerm.directMessage) 
+				cmd.run(bot, msg, args);
+		} else if (location == "text") {
+			// msg was recieved in a text channel in a guild
+			cmd.run(bot, msg, args);
+		}
+	} 
 }
 
 function memberUpdate(oldMember,newMember){

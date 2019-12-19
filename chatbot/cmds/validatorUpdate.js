@@ -22,12 +22,13 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
-	let msg = await message.channel.send("attempting to modify schema...")
-	schemaModify(args[0]).then( () => {
-		msg.edit(`Modified ${args[0]} successfully!`);
-	}).catch(err => {
-		log(err, true)
-		msg.edit(`issue modifying ${args[0]}: ${err}`);
-	})
+	log('validatorUpdate has been depreciated',true)
+	// let msg = await message.channel.send("attempting to modify schema...")
+	// schemaModify(args[0]).then( () => {
+	// 	msg.edit(`Modified ${args[0]} successfully!`);
+	// }).catch(err => {
+	// 	log(err, true)
+	// 	msg.edit(`issue modifying ${args[0]}: ${err}`);
+	// })
 	
 }

@@ -155,6 +155,15 @@ function databaseReady() {
 	return databaseBooted;
 }
 
+function validate(entry,colllection) {
+	// checks if the given entry fulfills the validation requirements of the given collection
+
+}
+
+function validateCollection(coll) {
+	// checks all entries in a collection against vallidation requirements of that collection
+}
+
 module.exports = {
 	databaseReady,
 	getMonsterArray,

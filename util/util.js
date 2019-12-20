@@ -69,6 +69,9 @@ function symDiff() {
     return result;
 }
 
+function asciiTable(array) {
+    // returns a neat string ascii table of the given array
+}
 
 module.exports = {
 	log,

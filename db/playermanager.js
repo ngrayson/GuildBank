@@ -15,7 +15,7 @@ async function initializePlayer(newPlayer){
 	}
 
 	//check to see if player already exists
-	if(await isInitialized( newPlayer.discordId)) {
+	if(await isInitialized( player.discordId)) {
 		throw `LOOMERROR: player already initialized: ${player.discordHandle}`;
 	}
 	else{

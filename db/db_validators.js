@@ -19,7 +19,7 @@ const characters = new Schema({
       length: { min: 1, max: 9}
    },
    player_id: {
-      type: Number,
+      type: String,
       required: true
    },
    date_created: {
@@ -62,7 +62,7 @@ const players = new Schema({
       required: false
    },
    discordId: {
-      type: Number,
+      type: String,
       required: true
    },
    active: {
@@ -80,8 +80,8 @@ const sessions = new Schema({
       type: String,
       required: true
    },
-   dungeonMasterId: {
-      type: Number,
+   dungeon_master_id: {
+      type: String,
       required: true
    },
    playLocation: {
@@ -93,13 +93,13 @@ const sessions = new Schema({
       type: Number,
       required: true
    },
-   enrolledCharacterIds: {
+   enrolled_haracter_ids: {
       type: Array,
-      each: { type: Number },
+      each: { type: String },
       required: false
    },
-   recapWriterPlayerId: {
-      type: Number,
+   recap_writer_player_id: {
+      type: String,
       required: false
    },
    adventure: {

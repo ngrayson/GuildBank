@@ -68,6 +68,7 @@ function getMonsterArray() {
 
 function addEntry(newObj,collection) {
 	log('adding entry to '+ collection, true);
+	log(newObj,true)
 	return new Promise((resolve, reject) => {
 		db.collection(collection,{strict:true}, (err, col) => {
 			if(err) {
@@ -75,7 +76,7 @@ function addEntry(newObj,collection) {
 				return log(err, true);
 			}
 			let check = validators[collection].validate(newObj);
-			if(check == null){
+			if(check.length == 0){
 				col.insertOne(newObj, (err, result) => {
 					if (err) {
 						log(`ERROR adding entry to ${collection}`,true)
@@ -85,7 +86,8 @@ function addEntry(newObj,collection) {
 				});
 			}
 			else {
-				log('throwing error in addEntry',true)
+				log('Validation Error in addEntry',true)
+				log(check,true);
 				reject(check)				
 			}
 		});

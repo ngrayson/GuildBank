@@ -56,7 +56,8 @@ module.exports.run = async(bot, message, args) => {
 				toBeInitialized++;
 				successes.push(newPlayer.discordHandle);
 			}).catch(err => {
-				log(err[0],true);
+				log('err:',true)
+				log(err,true);
 				if(typeof err == 'String' && err.search(`LOOMERROR: player already initialized`) != -1){
 					alreadyInitialized++;
 					log('alreadyInitialized: ' + alreadyInitialized,true)

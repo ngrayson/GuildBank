@@ -50,7 +50,7 @@ class Character {
 
 		this.nameFull = nameFull;
 		this._playerId = playerId; // make this private
-		this.nameShort = nameFull[0]; 
+		this.nameShort = nameFull.charAt(0); 
 		this.dateCreated = new Date(); // make this private
 		this.experience = 0; // make this private
 		this.moneyCp = 0; // make this private
@@ -145,7 +145,7 @@ function levelFromExperience(experience){
 }
 
 function sendCharacter(character) {
-	log('sendCharacter:')
+	log('sendCharacter:',true)
 	log('character class instance:',true)
 	log(character,true);
 	log('character object:',true)

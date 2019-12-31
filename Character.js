@@ -9,17 +9,22 @@ const levelThresholds = [
  85000,  100000, 120000, 140000, 165000, 
  195000, 225000, 265000, 305000, 355000];
 
-const charClass = {
-	BARBARIAN: 1,
-	BARD: 2
-}
+const classList = [
+	'Barbarian',
+	'Bard',
+	'Cleric',
+	'Druid',
+	'Fighter',
+	'Monk',
+	'Paladin',
+	'Ranger',
+	'Rogue',
+	'Sorcerer',
+	'Warlock',
+	'Wizard'];
 
-const charSubclass = {
-	BARBARIAN: {
-		ZEALOT: 1,
-		BATTLERAGER: 2
-	}
-}
+const subclassList = [
+	'Arcane Trickster'];
 	
 let characters = [];
 
@@ -184,8 +189,8 @@ function char2Object(charClass) {
 }
 		
 module.exports = {
-	charClass,
-	charSubclass,
+	classList,
+	subclassList,
 	Character
 }
 /*

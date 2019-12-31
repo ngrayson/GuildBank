@@ -19,13 +19,13 @@ async function initializePlayer(newPlayer){
 		throw `LOOMERROR: player already initialized: ${player.discordHandle}`;
 	}
 	else{
-		
-		try {
-			log( `typeof ${typeof player.discordId}`,true)
-			let res = db.addEntry(player, 'players')
+		try{
+			log( `\ntypeof ${typeof player.discordId}`,true)
+			let res = await db.addEntry(player, 'players')//.catch(log('an error happened',true))
+			log(res,true)
 			if(await res)
 				log(`successfully initialized player ${player.discordId}[${player.discordHandle}]`)
-		} catch (err) {	
+		}catch (err) {	
 			log('ERROR initializing player:',true)
 			log(player,true)
 			throw err;

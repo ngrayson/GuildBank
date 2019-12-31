@@ -1,4 +1,7 @@
 const log = require('../util/util.js').log;
+const validators = require('./db_validators.js');
+const Schema = require('validate');
+
 
 require('dotenv').config()
 
@@ -71,13 +74,20 @@ function addEntry(newObj,collection) {
 				log(`ERROR adding entry to ${collection}, collection error`, true)
 				return log(err, true);
 			}
-			col.insertOne(newObj, (err, result) => {
-				if (err) {
-					log(`ERROR adding entry to ${collection}`,true)
-					reject(err)
-				}
-				resolve("Successfully added an entry to " + collection + "!");
-			});
+			let check = validators[collection].validate(newObj);
+			if(check == null){
+				col.insertOne(newObj, (err, result) => {
+					if (err) {
+						log(`ERROR adding entry to ${collection}`,true)
+						reject(err)
+					}
+					resolve("Successfully added an entry to " + collection + "!");
+				});
+			}
+			else {
+				log('throwing error in addEntry',true)
+				reject(check)				
+			}
 		});
 	});
 }

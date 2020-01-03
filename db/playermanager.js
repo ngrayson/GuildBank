@@ -1,5 +1,12 @@
-const log = require('../util/util.js').log;
+const util = require('../util/util.js');
+const log = util.log;
+
 const db = require('./db.js');
+
+util.logBar(0,true);
+log(db,true);
+util.logBar(0,true);
+
 
 async function initializePlayer(newPlayer){
 

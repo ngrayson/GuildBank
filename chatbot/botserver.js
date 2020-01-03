@@ -25,11 +25,11 @@ fs.readdir('./chatbot/cmds/', (err, files) => {
 		return;
 	}
 
-	log(`Loading ${jsfiles.length} commands!`,true);
+	log(`    Loading ${jsfiles.length} commands!`,true);
 
 	jsfiles.forEach((f, i) => {
 		let props = require(`./cmds/${f}`);
-		log(`command ${i+1}: ${f} loaded!`,true);
+		log(`      command ${i+1}: ${f} loaded!`,true);
 		bot.commands.set(props.help.name, props);
 	});
 })
@@ -48,7 +48,8 @@ function run() {
 				'\x1b[0m',
 				true);
 			chatbotReady = true;
-			log(bot.commands,true);
+			log('bot.commands:');
+			log(bot.commands);
 		});
 
 		bot.on('message', async msg => {

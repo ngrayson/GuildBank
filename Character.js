@@ -1,33 +1,12 @@
 "use strict";
 
-const log = require('./util/util.js').log;
+// all functions and logic for instances of characters and about singleton characters
+
+const util = require('./util/util.js');
+const log = util.log;
 const db = require('./db/db.js');
-
-const levelThresholds = [
- 0,      300,    900,    2700,   6500,
- 14000,  23000,  34000,  48000,  64000,
- 85000,  100000, 120000, 140000, 165000, 
- 195000, 225000, 265000, 305000, 355000];
-
-const classList = [
-	'Barbarian',
-	'Bard',
-	'Cleric',
-	'Druid',
-	'Fighter',
-	'Monk',
-	'Paladin',
-	'Ranger',
-	'Rogue',
-	'Sorcerer',
-	'Warlock',
-	'Wizard'];
-
-const subclassList = [
-	'Arcane Trickster'];
+const characterOptions = require('./characterOptions.js');
 	
-let characters = [];
-
 class Character {
 
 
@@ -54,12 +33,11 @@ class Character {
 		this.dateCreated = new Date(); // make this private
 		this.experience = 0; // make this private
 		this.moneyCp = 0; // make this private
-		this.charClass = -1; // make this private
-		this.charSubclass = -1; // make this private
+		this.charClass = 'N/A'; // make this private
+		this.charSubclass = 'N/A'; // make this private
 		this.currentActivity = -1; // make this private
+		this.lastBackup
 
-		characters.push(this);
-		sendCharacter(this);
 
 	}
 
@@ -105,6 +83,34 @@ class Character {
 
 	}
 
+	static backup(character) {
+		log('backup character:')
+		log('character class instance:')
+		log(character);
+		log('character object:')
+		let charObj = char2Object(character);
+		log(charObj)
+		log('character_name_full: ' + charObj.character_name_full)
+		log(typeof charObj.character_name_full)
+		log('character_name_short: ' + charObj.character_name_short)
+		log(typeof charObj.character_name_short)
+		log('player_id: ' + charObj.player_id)
+		log(typeof charObj.player_id)
+		log('date_created: ' + charObj.date_created)
+		log(typeof charObj.date_created)
+		log('experience: ' + charObj.experience)
+		log(typeof charObj.experience)
+		log('moneyCp: ' + charObj.moneyCp)
+		log(typeof charObj.moneyCp)
+		log('class: ' + charObj.class)
+		log(typeof charObj.class)
+		log('subclass: ' + charObj.subclass)
+		log(typeof charObj.subclass)
+		log('current_activity: ' + charObj.current_activity)
+		log(typeof charObj.current_activity)
+		return db.addEntry(charObj,'characters');
+}
+
 	// all other methods
 	
 	addExperience(amount) {
@@ -140,36 +146,8 @@ function levelFromExperience(experience){
 	if (typeof experience != int)
 		throw 'cannot find level from a non-integer amount of experience'
 	else {
-		 return levelThresholds.findIndex((element => element > experience)) + 1;
+		 return characterOptions.levelThresholds.findIndex((element => element > experience)) + 1;
 	}
-}
-
-function sendCharacter(character) {
-	log('sendCharacter:',true)
-	log('character class instance:',true)
-	log(character,true);
-	log('character object:',true)
-	let charObj = char2Object(character);
-	log(charObj,true)
-	log('character_name_full: ' + charObj.character_name_full ,true)
-	log(typeof charObj.character_name_full, true)
-	log('character_name_short: ' + charObj.character_name_short ,true)
-	log(typeof charObj.character_name_short, true)
-	log('player_id: ' + charObj.player_id ,true)
-	log(typeof charObj.player_id, true)
-	log('date_created: ' + charObj.date_created ,true)
-	log(typeof charObj.date_created, true)
-	log('experience: ' + charObj.experience ,true)
-	log(typeof charObj.experience, true)
-	log('moneyCp: ' + charObj.moneyCp ,true)
-	log(typeof charObj.moneyCp, true)
-	log('class: ' + charObj.class ,true)
-	log(typeof charObj.class, true)
-	log('subclass: ' + charObj.subclass ,true)
-	log(typeof charObj.subclass, true)
-	log('current_activity: ' + charObj.current_activity ,true)
-	log(typeof charObj.current_activity, true)
-	db.addEntry(charObj,'characters');
 }
 
 //turns a character class entity into an object, for storing in the database
@@ -183,16 +161,13 @@ function char2Object(charClass) {
 		moneyCp: charClass.moneyCp,
 		class: charClass.charClass,
 		subclass: charClass.charSubclass,
-		current_activity: charClass.currentActivity	
+		current_activity: charClass.currentActivity,
+		lastBackup: charClass.lastBackup
 	}
 	return charObj;
 }
 		
-module.exports = {
-	classList,
-	subclassList,
-	Character
-}
+module.exports = Character
 /*
 so I am writing a discord bot which uses mongoDB as a database
 I have a Player class for doing Player things (like add experience)

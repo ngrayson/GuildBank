@@ -1,7 +1,7 @@
 let Schema = require('validate')
 
-let classList = require('./../Character.js').classList;
-let subclassList = require('./../Character.js').subclassList;
+let classList = require('./../characterOptions.js').classList;
+let subclassList = require('./../characterOptions.js').subclassList;
 let playLocations = ['Warchief']
 
 // uses npm validate package
@@ -31,7 +31,7 @@ const characters = new Schema({
       required: true,
       size: { min: 0}
    },
-   moneyCP: {
+   moneyCp: {
       type: Number,
       required: true,
       size: { min: 0}

@@ -40,6 +40,15 @@ async function initializePlayer(newPlayer){
 	}
 }
 
+async function updatePlayerNameById(id, name){
+	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
+	if(!playerSearch)
+		throw `no player with id: ${id}`
+	else {
+		
+	}
+}
+
 async function isInitialized(id){
 	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
 
@@ -52,5 +61,6 @@ async function isInitialized(id){
 
 module.exports = {
 	initializePlayer,
-	isInitialized
+	isInitialized,
+	updatePlayerNameById
 }

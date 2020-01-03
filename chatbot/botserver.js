@@ -5,8 +5,10 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
-const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
 const token = process.env.DBOT_TOKEN;
+
+const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
+const nameChange = require('./events/nameChange.js')
 
 let chatbotReady = false;
 
@@ -138,6 +140,9 @@ function memberUpdate(oldMember,newMember){
 			roleChange.newRole(oldMember,newMember);
 		else
 			roleChange.removedRole(oldMember,newMember);
+	}
+	else if(oldMember.nickname != newMember.nickname){
+		nameChange(oldMember, newMember);
 	}
 	// find difference in roles
 	// if DnD player role was added, initialize player

@@ -5,7 +5,7 @@ const util = require('../util/util.js');
 const log = util.log;
 const characterOptions = require('./../characterOptions.js');
 const Character = require('../Character.js');
-const playerExists = require('./playermanager.js').isInitialized;
+const playerExists = require('./playerManager.js').isInitialized;
 
 const db = require('./db.js');
 

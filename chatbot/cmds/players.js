@@ -33,7 +33,8 @@ module.exports.run = async(bot, message, args) => {
 function playerInfo(playerArray) {
 	let infoString = `There are currently ${playerArray.length} active players`;
 	playerArray.forEach(player => {
-		infoString += `\n ${player.name}: \n  DiscordID: ${player.discordID}`
+		log(player,true)
+		infoString += `\n ${player.discordHandle}: \n  DiscordID: ${player.discordId}`
 	})
 	return infoString;
 }

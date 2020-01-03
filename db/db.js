@@ -94,6 +94,38 @@ function addEntry(newObj,collection) {
 	});
 }
 
+function editEntry(coll, filter, update, options) {
+	// check to see how many entries this filter WOULD modify
+	// if more than one, error
+	// if one, try to edit
+
+	// log(`updating entry in ${coll}`,true)
+	// return new Promise((resolve,reject) => {
+	// 	db.collection(coll)
+	// 	.updateOne(filter,update,options,
+	// 		(err, result) => {
+	// 			if (err) return log(err, true);
+	// 			if (result.modifiedCount = 1)
+	// 				log(`successfully modified ${result.modifiedCount} entries!`,
+	// 					true)
+	// 		})
+	// })
+}
+
+function editEntries(coll, filter, update, options) {
+	// log(`updating entry in ${coll}`,true)
+	// return new Promise((resolve,reject) => {
+	// 	db.collection(coll)
+	// 	.updateOne(filter,update,options,
+	// 		(err, result) => {
+	// 			if (err) return log(err, true);
+	// 			if (result.modifiedCount = 1)
+	// 				log(`successfully modified ${result.modifiedCount} entries!`,
+	// 					true)
+	// 		})
+	// })
+}
+
 function editMonster(filter, update, options) {
 	log('updating monster', true);
 	return new Promise((resolve,reject) => {

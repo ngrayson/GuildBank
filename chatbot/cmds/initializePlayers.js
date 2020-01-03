@@ -1,4 +1,4 @@
-const players = require('../../db/playermanager.js');
+const players = require('../../db/playerManager.js');
 const log = require('../../util/util.js').log;
 
 module.exports.help = {

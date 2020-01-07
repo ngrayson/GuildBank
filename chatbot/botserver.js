@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
+const playerManager = require('./../db/playerManager')
 const token = process.env.DBOT_TOKEN;
 
 const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
@@ -113,10 +114,6 @@ function message(msg) {
 	log('  |' + msg.content,true)
 
 	if(cmd){
-		// check to see if user has permissions
-		// get user role
-		// get permissions from command
-		let cmdUserPerm = cmd.permissions.userPermissions;
 		// check to see if location has permissions
 			// get location 
 		let location = msg.channel.type;
@@ -124,12 +121,30 @@ function message(msg) {
 		let cmdLocationPerm = cmd.permissions.locationPermissions;
 		if(location == "dm") {
 			// msg was recieved in a DM
-			if(cmdLocationPerm.directMessage) 
-				cmd.run(bot, msg, args);
+			if(!cmdLocationPerm.directMessage)
+				msg.channel.send('that command is not available in direct messages');
+				
 		} else if (location == "text") {
 			// msg was recieved in a text channel in a guild
-			cmd.run(bot, msg, args);
+
+			// unfinished
 		}
+
+		// check to see if user has permissions
+		// get user role
+		let userPerm = playerManager.permissions(msg.author.id);
+		// get permissions from command
+		let cmdUserPerm = cmd.permissions.userPermissions;
+
+		log('cmdUserPerm', true)
+		log(cmdUserPerm, true)
+
+		userPerm.then( res => {
+			log('userPerm', true)
+			log(res, true)
+		})
+
+		cmd.run(bot, msg, args);
 	} 
 }
 

@@ -45,7 +45,8 @@ async function updatePlayerNameById(id, name){
 	if(!playerSearch)
 		throw `no player with id: ${id}`
 	else {
-		
+		log(playerSearch, true);
+		db.editEntry('players', {discordId: id}, { $set: {discordHandle: name}})
 	}
 }
 
@@ -59,8 +60,18 @@ async function isInitialized(id){
 	return playerSearch.length > 0
 }
 
+async function permissions(id){
+	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
+
+	log(playerSearch)
+	log(playerSearch.length > 0)
+
+	return playerSearch[0].permissions;
+}
+
 module.exports = {
 	initializePlayer,
 	isInitialized,
-	updatePlayerNameById
+	updatePlayerNameById,
+	permissions
 }

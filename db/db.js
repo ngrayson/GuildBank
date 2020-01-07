@@ -82,7 +82,9 @@ function addEntry(newObj,collection) {
 						log(`ERROR adding entry to ${collection}`,true)
 						reject(err)
 					}
-					resolve("Successfully added an entry to " + collection + "!");
+					if(result.modifiedCount == 1){
+						resolve("Successfully added an entry to " + collection + "!");
+					}
 				});
 			}
 			else {
@@ -94,22 +96,31 @@ function addEntry(newObj,collection) {
 	});
 }
 
-function editEntry(coll, filter, update, options) {
-	// check to see how many entries this filter WOULD modify
-	// if more than one, error
-	// if one, try to edit
 
-	// log(`updating entry in ${coll}`,true)
-	// return new Promise((resolve,reject) => {
-	// 	db.collection(coll)
-	// 	.updateOne(filter,update,options,
-	// 		(err, result) => {
-	// 			if (err) return log(err, true);
-	// 			if (result.modifiedCount = 1)
-	// 				log(`successfully modified ${result.modifiedCount} entries!`,
-	// 					true)
-	// 		})
-	// })
+// coll is a string
+// filter is an object with key values you want to filter by
+// update is the update you want to apply
+
+// example:
+// db.editEntry('players', {discordId: id}, { $set: {discordHandle: name}})
+// for more options than $set (there are a few), check out mongodb docs
+function editEntry(coll, filter, update, options) {
+	getElementIn(filter, coll).then( res => {
+		if(res.length == 1) {
+			log(`updating entry in ${coll}`,true)
+			return new Promise((resolve,reject) => {
+				db.collection(coll)
+				.updateOne(filter,update,options,
+					(err, result) => {
+						if (err) return log(err, true);
+						if (result.modifiedCount = 1)
+							log(`successfully modified ${result.modifiedCount} entries!`,
+								true)
+						// log(result, true);
+					})
+			})
+		};
+	}).catch(err => { throw 'expected to find 1 entries for given filter but found '+res.length;})
 }
 
 function editEntries(coll, filter, update, options) {
@@ -212,7 +223,7 @@ module.exports = {
 	databaseReady,
 	getMonsterArray,
 	addEntry,
-	editMonster,
+	editEntry,
 	deleteMonster,
 	runCommand,
 	newColl,

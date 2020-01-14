@@ -52,8 +52,6 @@ module.exports.run = async(bot, message, args) => {
 		log(err,true);
 	};
 
-
-
 	// await message.channel.send({files: [
 	// 	{
 	// 		attachment: message.author.displayAvatarURL,
@@ -73,7 +71,7 @@ module.exports.permissions = {
 	userPermissions: {
 		admin: true,
 		dm: true,
-		player: true
+		player: false
 	},
 	locationPermissions: {
 		activeGuild: true,

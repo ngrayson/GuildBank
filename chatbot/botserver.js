@@ -111,8 +111,8 @@ function message(msg) {
 
 	let cmd = bot.commands.get(command.slice(prefix.length));
 
-	log('recieved Discord message from ' + msg.author.username + ':');
-	log('  |' + msg.content)
+	log('recieved Discord message from ' + msg.author.username + ':',true);
+	log('  |' + msg.content,true)
 
 	if(cmd){
 		// check to see if location has permissions
@@ -134,8 +134,8 @@ function message(msg) {
 		// check to see if user has permissions
 		let userPerm = playerManager.permissions(msg.author.id);
 		userPerm.then( res => {
-			log('userPerm')
-			log(res)
+			log('userPerm',true)
+			log(res,true)
 			// get user role
 			let userPermFlags = 0;
 			if (userPerm.admin) userPermFlags += 4;
@@ -144,18 +144,18 @@ function message(msg) {
 
 			// get permissions from command
 			let cmdUserPerm = cmd.permissions.userPermissions;
-			log('cmdUserPerm')
-			log(cmdUserPerm)
+			log('cmdUserPerm',true)
+			log(cmdUserPerm,true)
 
 			let cmdUserPermFlags =0;
 			if (cmdUserPerm.admin) cmdUserPermFlags += 4;
 			if (cmdUserPerm.dm) cmdUserPermFlags += 2;
 			if (cmdUserPerm.player) cmdUserPermFlags += 1;
 
-			log('userPermFlags:')
-			log('cmdUserPermFlags:')
-			log(userPermFlags)
-			log(cmdUserPermFlags)
+			log('userPermFlags:',true)
+			log('cmdUserPermFlags:',true)
+			log(userPermFlags,true)
+			log(cmdUserPermFlags,true)
 
 			if(userPermFlags & cmdUserPermFlags > 1) {
 				cmd.run(bot, msg, args).catch( err => {

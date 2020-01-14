@@ -158,18 +158,20 @@ function editMonster(filter, update, options) {
 	})
 }
 
-function deleteMonster(filter, options) {
-	log('deleting monster', true);
+function deleteEntry(filter, coll, options) {
+	log('deleting from coll '+ coll, true);
+	log('filter',true);
+	log(filter,true);
 	return new Promise((resolve, reject) => {
-		db.collection('monsters',{strict:true}, (err, col) => {
+		db.collection(coll,{strict:true}, (err, col) => {
 			if(err) return log(err, true);
 			col.deleteOne(filter, (err, result) => {
 				if (err) return log(err, true);
-				log('deleted '+result.deletedCount+'entries', true)
+				log('deleted '+result.deletedCount+' entries', true)
 				if(result.deletedCount == 1)
-					resolve("Successfully deleted a monster!");
+					resolve(result);
 				else if (result.deletedCount == 0)
-					resolve("No Monster was deleted");
+					resolve("No entry was deleted");
 			});
 		});
 	});
@@ -226,7 +228,7 @@ module.exports = {
 	getMonsterArray,
 	addEntry,
 	editEntry,
-	deleteMonster,
+	deleteEntry,
 	runCommand,
 	newColl,
 	getFullCollectionArray,

@@ -50,6 +50,27 @@ async function updatePlayerNameById(id, name){
 	}
 }
 
+// updates a player's permissions where the permissions Object is of format
+// permissions: {
+// 	admin: true,
+// 	dm: false
+// }
+// either can be omitted, must be true or false
+async function updatePlayerPermissionsById(id,permissions){
+	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
+	if(playerSearch.length == 0)
+		throw `no player with id: ${id}`
+	else {
+		oldPerms = playerSearch[0].permissions;
+		let newPerms = {
+			// if permissions has a boolean, use that, otherwise use prior value
+			admin: typeof permissions.admin == 'boolean' ? permissions.admin : oldPerms.admin,
+			dm: typeof permissions.dm == 'boolean' ? permissions.dm : oldPerms.dm
+		}
+		return db.editEntry('players', {discordId: id}, { $set: {permissions: newPerms}});
+	}
+}
+
 async function isInitialized(id){
 	let playerSearch = await db.getElementIn({discordId: id} ,'players') 
 
@@ -73,5 +94,6 @@ module.exports = {
 	initializePlayer,
 	isInitialized,
 	updatePlayerNameById,
+	updatePlayerPermissionsById,
 	permissions
 }

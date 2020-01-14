@@ -69,6 +69,10 @@ function symDiff() {
     return result;
 }
 
+function name(member){
+    return member.nickname ? member.nickname : member.user.username
+}
+
 function asciiTable(array) {
     // returns a neat string ascii table of the given array
 }
@@ -76,5 +80,6 @@ function asciiTable(array) {
 module.exports = {
 	log,
 	logBar,
-	symDiff
+	symDiff,
+    name
 }

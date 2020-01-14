@@ -105,22 +105,24 @@ function addEntry(newObj,collection) {
 // db.editEntry('players', {discordId: id}, { $set: {discordHandle: name}})
 // for more options than $set (there are a few), check out mongodb docs
 function editEntry(coll, filter, update, options) {
-	getElementIn(filter, coll).then( res => {
-		if(res.length == 1) {
-			log(`updating entry in ${coll}`,true)
-			return new Promise((resolve,reject) => {
+	return new Promise((resolve,reject) => {
+		getElementIn(filter, coll).then( res => {
+			if(res.length == 1) {
+				log(`updating entry in ${coll}`,true)
 				db.collection(coll)
 				.updateOne(filter,update,options,
 					(err, result) => {
 						if (err) return log(err, true);
-						if (result.modifiedCount = 1)
+						if (result.modifiedCount = 1) {
 							log(`successfully modified ${result.modifiedCount} entries!`,
-								true)
+								true);
+							resolve(result);
+						}
 						// log(result, true);
 					})
-			})
-		};
-	}).catch(err => { throw 'expected to find 1 entries for given filter but found '+res.length;})
+			};
+		}).catch(err => { throw 'expected to find 1 entries for given filter but found '+res.length;})
+	})
 }
 
 function editEntries(coll, filter, update, options) {

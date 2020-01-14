@@ -1,31 +1,37 @@
 const players = require('../../db/playerManager.js');
 const log = require('../../util/util.js').log;
-const util = require('../../util/util.js');
 
 module.exports.help = {
-	name: 'initializePlayer',
-	description: 'attempts to initialize a given member of current guild without doing a role check'
+	name: 'grantAdmin',
+	description: 'Grants a target user admin powers'
 }
 
 module.exports.permissions = {
 	userPermissions: {
-		admin: true,
+		admin: false,
 		dm: false,
 		player: false
 	},
 	locationPermissions: {
-		activeGuild: true,
+		activeGuild: false,
 		passiveGuild: false,
 		inactiveGuild: false,
-		directMessage: true
+		directMessage: false
 	}
 }
 
 module.exports.run = async(bot, message, args) => {
+	let user = message.author;
 
 	log('args:')
 	log(args);
 	// check to see if discord ID is valid
+
+	if(args.length == 0) {
+		message.channel.send(`please specify who to target with @`);
+		return;
+	}
+
 	let guilds = bot.guilds;
 	guild = guilds.get(message.guild.id);
 	log('guild:');
@@ -37,18 +43,12 @@ module.exports.run = async(bot, message, args) => {
 		message.channel.send(`${discordId} is not a valid discord ID from this guild. As a result, no player <@${discordId}> has been initialized`);
 	}
 
-	// check to see if name is valid
-	let newPlayer = {
-		discordHandle: util.name(member),
-		discordId: discordId
+	if (players.isInitialized(discordId)) {
+		let result = await players.updatePlayerPermissionsById(discordId, {admin: true})
+		if(result.modifiedCount == 1) {
+			log('Admin Privelage granting successful!',true)
+			message.channel.send('Admin Privelages granted to ' + member.nickname)
+		}
 	}
-
-	players.initializePlayer(newPlayer).then(res =>{
-		let msg = message.channel.send(`Successfully initialized player ${newPlayer.discordHandle}>`);
-		log(`initialized player ${newPlayer.discordHandle}`,true)
-	}).catch(err => {
-		let msg = message.channel.send(`ERROR: Issue initializing player!\n${err}`);
-		log(err,true);
-	});
-
+	else throw 'Cannot assign role, player not initialized.'
 }

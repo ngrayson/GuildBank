@@ -1,4 +1,5 @@
 const log = require('../util/util.js').log;
+const util = require('../util/util.js');
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
@@ -110,8 +111,8 @@ function message(msg) {
 
 	let cmd = bot.commands.get(command.slice(prefix.length));
 
-	log('recieved Discord message from ' + msg.author.username + ':',true);
-	log('  |' + msg.content,true)
+	log('recieved Discord message from ' + msg.author.username + ':');
+	log('  |' + msg.content)
 
 	if(cmd){
 		// check to see if location has permissions
@@ -123,7 +124,7 @@ function message(msg) {
 			// msg was recieved in a DM
 			if(!cmdLocationPerm.directMessage)
 				msg.channel.send('that command is not available in direct messages');
-				
+				return
 		} else if (location == "text") {
 			// msg was recieved in a text channel in a guild
 
@@ -131,20 +132,45 @@ function message(msg) {
 		}
 
 		// check to see if user has permissions
-		// get user role
 		let userPerm = playerManager.permissions(msg.author.id);
-		// get permissions from command
-		let cmdUserPerm = cmd.permissions.userPermissions;
-
-		log('cmdUserPerm', true)
-		log(cmdUserPerm, true)
-
 		userPerm.then( res => {
-			log('userPerm', true)
-			log(res, true)
-		})
+			log('userPerm')
+			log(res)
+			// get user role
+			let userPermFlags = 0;
+			if (userPerm.admin) userPermFlags += 4;
+			if (userPerm.dm) userPermFlags += 2;
+			if (playerManager.isInitialized(msg.author.id)) userPermFlags += 1;
 
-		cmd.run(bot, msg, args);
+			// get permissions from command
+			let cmdUserPerm = cmd.permissions.userPermissions;
+			log('cmdUserPerm')
+			log(cmdUserPerm)
+
+			let cmdUserPermFlags =0;
+			if (cmdUserPerm.admin) cmdUserPermFlags += 4;
+			if (cmdUserPerm.dm) cmdUserPermFlags += 2;
+			if (cmdUserPerm.player) cmdUserPermFlags += 1;
+
+			log('userPermFlags:')
+			log('cmdUserPermFlags:')
+			log(userPermFlags)
+			log(cmdUserPermFlags)
+
+			if(userPermFlags & cmdUserPermFlags > 1) {
+				cmd.run(bot, msg, args).catch( err => {
+					log('something went wrong with that command... ',true)
+					log(err,true)
+				});
+				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
+			} else {
+				msg.author.createDM().then( channel => {
+					channel.send(`*${msg.content}* is not a valid command for your permission level`)
+				})
+				log(`${msg.content} was attempted to be ran by ${util.name(msg.member)}, but they lack the correct permissions`,true)
+
+			}
+		})
 	} 
 }
 

@@ -142,8 +142,8 @@ function message(msg) {
 			}
 
 			// check to see if user has permissions
-			log('user:',true)
-			log(user,true)
+			log('user:')
+			log(user)
 			// get user role
 			let userPermFlags = 0;
 			if (user.isAdmin) userPermFlags += 4;
@@ -152,18 +152,18 @@ function message(msg) {
 
 			// get permissions from command
 			let cmdUserPerm = cmd.permissions.userPermissions;
-			log('cmdUserPerm',true)
-			log(cmdUserPerm,true)
+			log('cmdUserPerm')
+			log(cmdUserPerm)
 
 			let cmdUserPermFlags =0;
 			if (cmdUserPerm.admin) cmdUserPermFlags += 4;
 			if (cmdUserPerm.dm) cmdUserPermFlags += 2;
 			if (cmdUserPerm.player) cmdUserPermFlags += 1;
 
-			log('userPermFlags:',true)
-			log('cmdUserPermFlags:',true)
-			log(userPermFlags,true)
-			log(cmdUserPermFlags,true)
+			log('userPermFlags:')
+			log('cmdUserPermFlags:')
+			log(userPermFlags)
+			log(cmdUserPermFlags)
 
 			if(true || userPermFlags & cmdUserPermFlags > 1) {
 				cmd.run(bot, msg, args).catch( err => {

@@ -35,7 +35,7 @@ const userSchema = new Schema({
 }, schemaOptions);
  
 /* Virtuals */
- 
+
 // Concat user's first + last name
 userSchema.virtual('fullName').get( () => {
   return this.name.first + ' ' + this.name.last;

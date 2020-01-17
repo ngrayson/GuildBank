@@ -8,14 +8,28 @@ const db = require('../db/db.js');
 // getUser
 function getUser(id){
 	return new Promise((resolve, reject) => {
-		User.find({ connections: { discord: { discordId: id }}}, (err, res) => {
+		let filter =
+			{ 
+				name: {
+					// discord: {
+						// discord_id: id
+					// }
+				}
+			};
+		log('filter:')
+		log(filter);
+		User.where('connections.discord.discord_id',id).exec((err, res) => {
+		// User.find(filter, (err, res) => {
 			if (err) {
 				log(`error getting user with id ${id}`,true)
 				log (err,true)
 				reject(`no user found with id ${id}`)
-			} 
+			}
+			log(res) 
 			if (res.length == 0) resolve (false);
-			else resolve(res);
+			else {
+				resolve(res);
+			}
 		})
 	});
 }
@@ -23,7 +37,8 @@ function getUser(id){
 function initializeUser(newUser){
 	if (!newUser.hasOwnProperty('discordId')) throw 'Users require a valid discord Id';
 
-	log(newUser,true)
+	log('user to be initialized')
+	log(newUser)
 
 	return new Promise((resolve, reject) => {
 
@@ -31,6 +46,8 @@ function initializeUser(newUser){
 		getUser(newUser.discordId).catch( err => {
 			log(err, true)
 		}).then(user => {
+			log('user:',true)
+			log(user,true)
 			if(user)
 				reject(`LOOMERROR: user already initialized: ${user.discordHandle}`)
 			else{
@@ -40,9 +57,11 @@ function initializeUser(newUser){
 					name: {
 						first: 'name' in newUser ? newUser.name : 'null'
 					},
-					discord: {
-						discord_handle: 'discordHandle' in newUser ? newUser.discordHandle : 'null',
-						discord_id: newUser.discordId
+					connections:{
+						discord: {
+							discord_handle: 'discordHandle' in newUser ? newUser.discordHandle : 'null',
+							discord_id: newUser.discordId
+						}
 					},
 					is_active: true
 				})
@@ -63,20 +82,6 @@ function initializeUser(newUser){
 		})
 	})
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 async function updateUserNameById(id, name){
 	let UserSearch = await db.getElementIn({discordId: id} ,'Users') 

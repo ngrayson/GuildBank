@@ -51,7 +51,7 @@ module.exports.run = async(bot, message, args) => {
 			log(`${newPlayer.discordHandle} has the DnD Player Role!`)
 			roledMembers++;
 			
-			await players.initializePlayer(newPlayer).then(res =>{
+			await players.initializeUser(newPlayer).then(res =>{
 				log(`initialized player ${newPlayer.discordHandle}`,true)
 				toBeInitialized++;
 				successes.push(newPlayer.discordHandle);

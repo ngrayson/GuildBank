@@ -5,8 +5,70 @@
 const util = require('./util/util.js');
 const log = util.log;
 const db = require('./db/db.js');
+const mongoose = db.mongoose;
 const characterOptions = require('./characterOptions.js');
-	
+
+let characterSchema = new mongoose.Schema({
+	firstName: String,
+	lastName: String,
+	nameShort: String,
+	playerId: mongoose.ObjectId,
+	dateCreated: Date,
+	experience: Number,
+	charClass: String,
+	charSubclass: String,
+	currentActivity: Number
+});
+
+characterSchema.methods.fullName = function () {
+	let fullName = this.firstName 
+		? this.firstName + ' ' + this.lastName
+		: 'a nameless man';
+	return fullName;
+}
+
+characterSchema.methods.moneyString = function() {
+	let moneyString = '';
+		let money = 14922; //this.moneyCp;
+		let gold = Math.floor(money/100);
+		money -= gold*100;
+		
+		let silver = Math.floor(money/10);
+		money -= silver*10;
+		
+		let copper = money;
+
+		moneyString += gold + ' gp, '
+		moneyString += silver + ' sp, '
+		moneyString += copper + ' cp'
+
+		return moneyString
+}
+
+characterSchema.methods.addExperience = function(amount) {
+	this.experience += amount;
+	return this.experience;
+}
+
+characterSchema.methods.addResonite = function(amount) {
+	log('the addResonite function is unfinished',true);
+	// get player( this.playerid)
+	// player.addresonite		
+}
+
+characterSchema.methods.removeResonite = function(amount) {
+	log('the removeResonite function is unfinished',true);
+	// get player( this.playerid)
+	// player.removeresonite	
+}
+
+characterSchema.methods.level = function(){
+	return levelFromExperience(this.experience);
+}
+
+
+	/*
+}
 class Character {
 
 
@@ -108,8 +170,8 @@ class Character {
 		log(typeof charObj.subclass)
 		log('current_activity: ' + charObj.current_activity)
 		log(typeof charObj.current_activity)
-		return db.addEntry(charObj,'characters');
-}
+		return addEntry(charObj,'characters');
+	}
 
 	// all other methods
 	
@@ -141,6 +203,12 @@ class Character {
 			this._playerId = playerId;
 	}
 }
+
+*/
+
+
+let Character = mongoose.model('Character', characterSchema)
+
 
 function levelFromExperience(experience){
 	if (typeof experience != int)

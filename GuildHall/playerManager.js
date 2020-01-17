@@ -1,12 +1,13 @@
 const util = require('../util/util.js');
 const log = util.log;
 
+const User = require('./db/User.js')
 const db = require('./db.js');
 
-util.logBar(0,true);
-log(db,true);
-util.logBar(0,true);
 
+// getUser
+
+// findOrCreate
 
 async function initializePlayer(newPlayer){
 

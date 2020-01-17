@@ -1,7 +1,7 @@
 //nameChange.js
 
 const log = require('../../util/util.js').log;
-const playerManager = require('./../../db/playerManager.js');
+const userManager = require('./../../db/userManager.js');
 
 function nameChange(oldMember, newMember) {
 	let oldName = oldMember.nickname == null ? oldMember.user.username : oldMember.nickname;
@@ -9,7 +9,7 @@ function nameChange(oldMember, newMember) {
 
 	log(`${oldName} changed name to ${newName}`,true)
 
-	playerManager.updatePlayerNameById(newMember.user.id,newName);
+	userManager.updatePlayerNameById(newMember.user.id,newName);
 
 }
 

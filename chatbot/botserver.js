@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
-const playerManager = require('./../db/playerManager')
+const userManager = require('./../db/userManager')
 const token = process.env.DBOT_TOKEN;
 
 const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out
@@ -112,9 +112,10 @@ function message(msg) {
 	let cmd = bot.commands.get(command.slice(prefix.length));
 
 	log('recieved Discord message from ' + msg.author.username + ':',true);
-	log('  |' + msg.content,true)
+	log(' | ' + msg.content,true)
 
 	if(cmd){
+		log('cmd!',true)
 		// check to see if location has permissions
 			// get location 
 		let location = msg.channel.type;
@@ -131,16 +132,23 @@ function message(msg) {
 			// unfinished
 		}
 
-		// check to see if user has permissions
-		let userPerm = playerManager.permissions(msg.author.id);
-		userPerm.then( res => {
-			log('userPerm',true)
-			log(res,true)
+		userManager.getUser(msg.author.id).then( user => {
+			if(!user){
+				log('command sent by a non-user, ignoring them',true)
+				msg.author.createDM().then( channel => {
+					channel.send(`You are not an initialized user, so you may not send commands`);
+				})
+				// return;
+			}
+
+			// check to see if user has permissions
+			log('user:',true)
+			log(user,true)
 			// get user role
 			let userPermFlags = 0;
-			if (userPerm.admin) userPermFlags += 4;
-			if (userPerm.dm) userPermFlags += 2;
-			if (playerManager.isInitialized(msg.author.id)) userPermFlags += 1;
+			if (user.isAdmin) userPermFlags += 4;
+			if (user.isDm) userPermFlags += 2;
+			if (user.isPlayer) userPermFlags += 1;
 
 			// get permissions from command
 			let cmdUserPerm = cmd.permissions.userPermissions;
@@ -157,7 +165,7 @@ function message(msg) {
 			log(userPermFlags,true)
 			log(cmdUserPermFlags,true)
 
-			if(userPermFlags & cmdUserPermFlags > 1) {
+			if(true || userPermFlags & cmdUserPermFlags > 1) {
 				cmd.run(bot, msg, args).catch( err => {
 					log('something went wrong with that command... ',true)
 					log(err,true)
@@ -170,7 +178,7 @@ function message(msg) {
 				log(`${msg.content} was attempted to be ran by ${util.name(msg.member)}, but they lack the correct permissions`,true)
 
 			}
-		})
+		});
 	} 
 }
 

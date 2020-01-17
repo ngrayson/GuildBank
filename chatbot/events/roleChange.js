@@ -1,6 +1,6 @@
 const log = require('../../util/util.js').log;
 const symDiff = require('../../util/util.js').symDiff;
-const playerManager = require('../../db/playerManager.js');
+const userManager = require('../../db/userManager.js');
 
 function newRole(oldMember,newMember) {
 	let playerName = newMember.user.nickname == null ? newMember.user.username : newMember.user.nickname;
@@ -28,12 +28,12 @@ function removedRole(oldMember,newMember) {
 
 async function newPlayerRole(playerName, discordId) {
 
-	let isInitialized = await playerManager.isInitialized(discordId);
+	let isInitialized = await userManager.isInitialized(discordId);
 	if(isInitialized) {
 		log(`player role was added to an already initialized player`,true)
 		return
 	}
-	playerManager.initializePlayer({
+	userManager.initializePlayer({
 		discordHandle: playerName,
 		discordId: discordId
 	}).then( () => {

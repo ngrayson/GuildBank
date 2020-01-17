@@ -1,5 +1,6 @@
 const log = require('../util/util.js').log;
 const validators = require('./db_validators.js');
+const mongoose = require('mongoose');
 const Schema = require('validate');
 
 
@@ -14,29 +15,30 @@ const mongoUrl =
 	MONGO_UN + 
 	':' + 
 	MONGO_PW + 
-	'@loom-nsyqv.azure.mongodb.net/test?retryWrites=true&w=majority';
+	'@loom-nsyqv.azure.mongodb.net/loom?retryWrites=true&w=majority';
 
-const MongoClient = require('mongodb').MongoClient
-
-const client = new MongoClient(mongoUrl, {
-	useUnifiedTopology: true,
-	useNewUrlParser: true
+mongoose.connect(mongoUrl, {useNewUrlParser: true}).catch(err => {
+	log("Error with mongoose connecting!",true);
+	throw err;
 });
-
-client.connect((err, database) => {
-	if (err) return log (err, true)
+let db = mongoose.connection;
+db.on('error', err => {
+	log(err,true);
+	throw err
+});
+db.once('open', function() {
 	log('\x1b[32m'+
-		' ✓' +
-		'\x1b[0m' +
-		' Connected to the databse as ' +
-		'\x1b[7m' +
-		 MONGO_UN +
-		'\x1b[0m',
-		true)
-	db = client.db('loom')	
+	' ✓' +
+	'\x1b[0m' +
+	' Connected to the \x1b[32mmongooose\x1b[0m databse as ' +
+	'\x1b[7m' +
+	 MONGO_UN +
+	'\x1b[0m',
+	true);
 	databaseBooted = true;
-})
+});
 log('  MongoDB connection initializing...', true);
+
 
 function getFullCollectionArray(collectionName) {
 	log('grabbing collection: ' + collectionName, true);
@@ -232,5 +234,6 @@ module.exports = {
 	runCommand,
 	newColl,
 	getFullCollectionArray,
-	getElementIn
+	getElementIn,
+	mongoose
 }

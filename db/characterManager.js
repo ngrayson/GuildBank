@@ -5,26 +5,23 @@ const util = require('../util/util.js');
 const log = util.log;
 const characterOptions = require('./../characterOptions.js');
 const Character = require('../Character.js');
-const playerExists = require('./playerManager.js').isInitialized;
+const userExists = require('./userManager.js').isInitialized;
 
 const db = require('./db.js');
 
 let characters = [];
 
-util.logBar(0,true);
-log(db,true);
-util.logBar(0,true);
 
 
-async function initializeCharacter(nameFull,playerId){
+async function initializeCharacter(nameFull,userId){
 	log(`initializing character ${nameFull}`);
-	let newChar = new Character(nameFull,playerId);
+	let newChar = new Character(nameFull,userId);
 
 	if(await isInitialized(nameFull)) {
 		throw `GUILDBANKERROR: character already exists: ${nameFull}`;
 	}
-	else if(playerId && !playerExists(playerId)) {
-		throw `No player with ID ${playerId} exists`;
+	else if(userId && !userExists(userId)) {
+		throw `No user with ID ${userId} exists`;
 	}
 	else{
 		try{

@@ -2,11 +2,11 @@
 
 // all functions and logic for instances of characters and about singleton characters
 
-const util = require('./util/util.js');
+const util = require('../util/util.js');
 const log = util.log;
-const db = require('./db/db.js');
+const db = require('./db.js');
 const mongoose = db.mongoose;
-const characterOptions = require('./characterOptions.js');
+const characterOptions = require('../characterOptions.js');
 
 let characterSchema = new mongoose.Schema({
 	firstName: String,

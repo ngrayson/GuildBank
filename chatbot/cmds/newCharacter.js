@@ -1,6 +1,6 @@
 // newCharacter.js
 const log = require('../../util/util.js').log;
-let characterManager = require('./../../db/characterManager.js');
+let characterManager = require('./../../GuildHall/characterManager.js');
 
 module.exports.run = async(bot, message, args) => {
 	let msg = await message.channel.send("generating character...")

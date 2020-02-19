@@ -227,6 +227,7 @@ function validateCollection(coll) {
 
 module.exports = {
 	databaseReady,
+	mongoose,
 	getMonsterArray,
 	addEntry,
 	editEntry,
@@ -234,6 +235,5 @@ module.exports = {
 	runCommand,
 	newColl,
 	getFullCollectionArray,
-	getElementIn,
-	mongoose
+	getElementIn
 }

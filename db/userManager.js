@@ -65,7 +65,7 @@ function initializeUser(newUser){
 					},
 					is_active: true
 				})
-
+				
 				newUserDoc.save((err, user) => {
 					if(err){
 						log(err,true);
@@ -78,7 +78,7 @@ function initializeUser(newUser){
 						resolve(user);
 					}
 				})
-			}	
+			}
 		})
 	})
 }

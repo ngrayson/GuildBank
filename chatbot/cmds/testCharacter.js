@@ -1,4 +1,4 @@
-const Character = require('../../Character.js').Character;
+const Character = require('../../db/Character.js').Character;
 const log = require('../../util/util.js').log;
 
 module.exports.help = {

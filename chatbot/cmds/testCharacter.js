@@ -1,4 +1,4 @@
-const Character = require('../../db/Character.js').Character;
+const Character = require('../../db/Character.js');
 const log = require('../../util/util.js').log;
 
 module.exports.help = {
@@ -21,17 +21,15 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
-	let sansBar = new Character('Sansbar Illyan', 0);
-	let msg = await message.channel.send('made Sansbar')
-	log('sansBar money:',true)
-	log(sansBar.moneyString,true)
-	log('allCharacters:',true)
-	log(Character.allCharacters(),true)
-	// let msg = await message.channel.send("generating player info...")
-
-	// let playerArray = await db.getFullCollectionArray('players');
-
-	// await message.channel.send(playerInfo(playerArray))
-
-	// msg.delete();
+	let sansBar = Character.newCharacter({
+		firstName: 'Sansbar',
+		lastName: 'Illyn'
+	});
+	sansBar.then( res => {
+		log(`new character created`,true);
+		let msg = message.channel.send('Successfully created Sansbar');
+	}).catch( err => {
+		log(err,true)
+		let msg = message.channel.send('ERROR creating Sansbar:\n'+err)
+	})
 }

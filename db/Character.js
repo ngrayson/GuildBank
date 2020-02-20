@@ -11,19 +11,62 @@ const characterOptions = require('../characterOptions.js');
 let characterSchema = new mongoose.Schema({
 	firstName: String,
 	lastName: String,
+	nickName: String,
 	nameShort: String,
 	playerId: mongoose.ObjectId,
 	dateCreated: Date,
 	experience: Number,
 	charClass: String,
 	charSubclass: String,
-	currentActivity: Number
+	currentActivity: Number,
+	moneyCP: Number,
+	location: String,
+	Inventory: Object,
+	hitDieCurrent: Number,
+	hpCurrent: Number,
+	hpMax: Number
 });
+
+// static constructor method, does validation of charObj,
+//  if everything looks good then saves the character and passes it back
+characterSchema.statics.newCharacter = function(charObj) {
+	return new Promise((resolve,reject) => {
+		let newCharCheck = checkNewCharacter(charObj);
+
+		newCharCheck.then( (res) => {
+			if(res) {
+				log('making new character...',true)
+				charObj = initializeFields(charObj);
+				let newChar = new Character(charObj)
+				newChar.save().then(() => {
+					Character.find({
+						firstName: charObj.firstName,
+						lastName: charObj.lastName
+					},(err,res) => {
+						if(err) return log(err,true);
+						log('new character made:',true)
+						log(res[0],true)
+						resolve(newChar);
+					});
+				}).catch(err => {
+					if(err) { 
+						log(err,true)
+						reject(err)
+					}
+				})
+			}
+		}).catch( err => {
+			log('Error from checkCharacter:',true)
+			log(err,true)
+			reject(err)
+		})
+	})
+}
 
 characterSchema.methods.fullName = function () {
 	let fullName = this.firstName 
 		? this.firstName + ' ' + this.lastName
-		: 'a nameless man';
+		: 'a nameless person';
 	return fullName;
 }
 
@@ -66,6 +109,75 @@ characterSchema.methods.level = function(){
 	return levelFromExperience(this.experience);
 }
 
+
+let Character = mongoose.model('Character', characterSchema)
+
+async function checkNewCharacter(charObj){
+	if(charObj.firstName && charObj.lastName) {
+		// check to make sure that the character has a unique name
+		let charOK = true;
+
+		let namePromise = Character.find({
+			firstName: charObj.firstName,
+			lastName: charObj.lastName
+		}).then( res => {
+			log(`Character name search for ${charObj.firstName} ${charObj.lastName}:`,true)
+
+			log(res,true);
+			log(res.length,true);
+			if(res.length > 0) {
+				log('rejecting...',true)
+				charOK = false;
+				throw 'Character with that name already exists';
+			}
+		}).catch( err => {
+			if(err) {
+				charOK = false;
+				throw err; 
+			}
+		})
+
+		if(charObj.nickName) {
+			let nicknamePromise = await Character.find({
+				nickName: charObj.nickName
+			}).then( res => {
+				log(`Character nickname search for ${charObj.nickName}:`,true)
+
+				log(res, true);
+				if(res.length > 0) {
+					charOK = false
+					throw 'Character with that nickname already exists';
+				}
+			}).catch( err => {
+				if(err){
+					charOK = false
+					throw err
+				}
+			})
+		}
+
+		await namePromise;
+
+		if(charOK) {
+			log('Character passes all checks',true)
+			return true;
+		}
+	}
+}
+
+function levelFromExperience(experience){
+	if (typeof experience != int)
+		throw 'cannot find level from a non-integer amount of experience'
+	else {
+		 return characterOptions.levelThresholds.findIndex((element => element > experience)) + 1;
+	}
+}
+
+function initializeFields(charObj){
+	
+}
+		
+module.exports = Character
 
 	/*
 }
@@ -206,50 +318,19 @@ class Character {
 
 */
 
-
-let Character = mongoose.model('Character', characterSchema)
-
-
-function levelFromExperience(experience){
-	if (typeof experience != int)
-		throw 'cannot find level from a non-integer amount of experience'
-	else {
-		 return characterOptions.levelThresholds.findIndex((element => element > experience)) + 1;
-	}
-}
-
-//turns a character class entity into an object, for storing in the database
-function char2Object(charClass) {
-	let charObj = {
-		character_name_full: charClass.nameFull,
-		character_name_short: charClass.nameShort,
-		player_id: charClass._playerId,
-		date_created: charClass.dateCreated,
-		experience: charClass.experience,
-		moneyCp: charClass.moneyCp,
-		class: charClass.charClass,
-		subclass: charClass.charSubclass,
-		current_activity: charClass.currentActivity,
-		lastBackup: charClass.lastBackup
-	}
-	return charObj;
-}
-		
-module.exports = Character
-/*
-so I am writing a discord bot which uses mongoDB as a database
-I have a Player class for doing Player things (like add experience)
-in my mongoDB I have a Player collection so I can keep all that information up to date
-how do I decide what to store in memmory vs the database?
-I want the database to be the source of truth in case the server crashes or something happens
-but then I am worried that im missing out on a lot of time gains.
-
-I guess part of this is figuring out if I want push or pull based?
-
-I don't see a reason for there to be multiple servers (maybe multiple clients)
-
-can I make the server memmory master and the DB slave while the server is online?
-would that be stupid?
-
-This is such a high level infrastructure/architectural decision that I am not comfortable just doing something that works
-*/
+// //turns a character class entity into an object, for storing in the database
+// function char2Object(charClass) {
+// 	let charObj = {
+// 		character_name_full: charClass.nameFull,
+// 		character_name_short: charClass.nameShort,
+// 		player_id: charClass._playerId,
+// 		date_created: charClass.dateCreated,
+// 		experience: charClass.experience,
+// 		moneyCp: charClass.moneyCp,
+// 		class: charClass.charClass,
+// 		subclass: charClass.charSubclass,
+// 		current_activity: charClass.currentActivity,
+// 		lastBackup: charClass.lastBackup
+// 	}
+// 	return charObj;
+// }

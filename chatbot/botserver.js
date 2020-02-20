@@ -115,7 +115,7 @@ function message(msg) {
 	log(' | ' + msg.content,true)
 
 	if(cmd){
-		log('cmd!',true)
+		log('a valid command!',true)
 		// check to see if location has permissions
 			// get location 
 		let location = msg.channel.type;
@@ -166,6 +166,7 @@ function message(msg) {
 			log(cmdUserPermFlags)
 
 			if(true || userPermFlags & cmdUserPermFlags > 1) {
+				// if you get an error here, make sure the run function in the cmd file is async
 				cmd.run(bot, msg, args).catch( err => {
 					log('something went wrong with that command... ',true)
 					log(err,true)

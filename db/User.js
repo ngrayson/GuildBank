@@ -10,7 +10,9 @@ const Schema = mongoose.Schema;
  
 /* Schema */
 const schemaOptions = {
-  toJSON: { virtuals: true }
+  toJSON: { virtuals: true },
+  timestamps: true,
+  versionKey: 'version'
 };
 
 const userSchema = new Schema({
@@ -34,6 +36,25 @@ const userSchema = new Schema({
   scopes: []
 }, schemaOptions);
  
+/* Static Methods */
+userSchema.statics.listUsers = function() {
+	return new Promise((resolve,reject) => {
+		User.find().then(res => {
+			let txt = `__**${res.length} user${res.length == 1 ? '' : 's'} currently initialized:**__\n`;
+      let index = 1;
+      res.forEach( user => {
+        txt += index + '. ' +
+        (user.handle ? user.handle : user.connections.discord.discord_handle) + '\n';
+        index++;
+      })
+			resolve(txt)
+		}).catch( err => {
+			log('error finding users', true)
+			reject(err);
+		})
+	})
+}
+
 /* Virtuals */
 
 // Concat user's first + last name

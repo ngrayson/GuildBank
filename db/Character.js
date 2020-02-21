@@ -7,6 +7,7 @@ const log = util.log;
 const db = require('./db.js');
 const mongoose = db.mongoose;
 const characterOptions = require('../characterOptions.js');
+const greenCheck = '\x1b[32m ✓ \x1b[0m';
 
 let characterSchema = new mongoose.Schema({
 	firstName: String,
@@ -14,17 +15,20 @@ let characterSchema = new mongoose.Schema({
 	nickName: String,
 	nameShort: String,
 	playerId: mongoose.ObjectId,
-	dateCreated: Date,
 	experience: Number,
 	charClass: String,
 	charSubclass: String,
-	currentActivity: Number,
+	currentActivity: String,
 	moneyCP: Number,
 	location: String,
 	Inventory: Object,
 	hitDieCurrent: Number,
-	hpCurrent: Number,
-	hpMax: Number
+	hpMax: Number,
+	hpCurrent: Number
+},
+{ 
+	timestamps: true,
+	versionKey: 'version'
 });
 
 // static constructor method, does validation of charObj,
@@ -35,17 +39,15 @@ characterSchema.statics.newCharacter = function(charObj) {
 
 		newCharCheck.then( (res) => {
 			if(res) {
-				log('making new character...',true)
-				charObj = initializeFields(charObj);
-				let newChar = new Character(charObj)
+				log(` >> making new character: '${charObj.firstName}'`,true)
+				let newCharObj = initializeFields(charObj)
+				let newChar = new Character(newCharObj)
 				newChar.save().then(() => {
 					Character.find({
 						firstName: charObj.firstName,
 						lastName: charObj.lastName
-					},(err,res) => {
-						if(err) return log(err,true);
-						log('new character made:',true)
-						log(res[0],true)
+					}).then( res => {
+						log(`${greenCheck}new character '${res[0].firstName}' successfully made`,true)
 						resolve(newChar);
 					});
 				}).catch(err => {
@@ -63,12 +65,13 @@ characterSchema.statics.newCharacter = function(charObj) {
 	})
 }
 
-characterSchema.methods.fullName = function () {
+characterSchema.virtual('fullName').get( function() {
+	log(this,true)
 	let fullName = this.firstName 
 		? this.firstName + ' ' + this.lastName
 		: 'a nameless person';
 	return fullName;
-}
+})
 
 characterSchema.methods.moneyString = function() {
 	let moneyString = '';
@@ -109,6 +112,22 @@ characterSchema.methods.level = function(){
 	return levelFromExperience(this.experience);
 }
 
+/* Statics */
+characterSchema.statics.listCharacters = function() {
+	return new Promise((resolve,reject) => {
+		Character.find().then(res => {
+			let txt = `__**${res.length} character${res.length == 1 ? '' : 's'} currently initialized:**__\n`;
+			res.forEach( character => {
+				txt += character.fullName + '\n';
+				log(character,true)
+			})
+			resolve(txt)
+		}).catch( err => {
+			log('error finding characters', true)
+			reject(err);
+		})
+	})
+}
 
 let Character = mongoose.model('Character', characterSchema)
 
@@ -122,9 +141,9 @@ async function checkNewCharacter(charObj){
 			lastName: charObj.lastName
 		}).then( res => {
 			log(`Character name search for ${charObj.firstName} ${charObj.lastName}:`,true)
-
 			log(res,true);
-			log(res.length,true);
+
+			log(res.length + ' character(s) found',true);
 			if(res.length > 0) {
 				log('rejecting...',true)
 				charOK = false;
@@ -174,7 +193,24 @@ function levelFromExperience(experience){
 }
 
 function initializeFields(charObj){
-	
+	let newCharObj = {
+		firstName: 	     typeof charObj.firstName       == 'undefined' ? 'DEFAULT' : charObj.firstName,
+		lastName:        typeof charObj.lastName        == 'undefined' ? 'DEFAULT' : charObj.lastName,
+		nickName:        typeof charObj.nickName        == 'undefined' ? 'DEFAULT' : charObj.nickName,
+		nameShort:       typeof charObj.nameShort       == 'undefined' ? 'DEFAULT' : charObj.nameShort,
+		experience:      typeof charObj.experience      == 'undefined' ? 0 : charObj.experience,
+		charClass:       typeof charObj.charClass       == 'undefined' ? 'none' : charObj.charClass,
+		charSubclass:    typeof charObj.charSubclass    == 'undefined' ? 'none' : charObj.charSubclass,
+		currentActivity: typeof charObj.currentActivity == 'undefined' ? 'none' : charObj.currentActivity,
+		moneyCP:         typeof charObj.moneyCP         == 'undefined' ? 0 : charObj.moneyCP,
+		location:        typeof charObj.location        == 'undefined' ? 'Foxbarrow Farms' : charObj.location,
+		Inventory:       typeof charObj.Inventory       == 'undefined' ? {} : charObj.Inventory,
+		hitDieCurrent:   typeof charObj.hitDieCurrent   == 'undefined' ? 1 : charObj.hitDieCurrent,
+		hpMax:           typeof charObj.hpMax           == 'undefined' ? 5 : charObj.hpMax,
+		hpCurrent:       typeof charObj.hpCurrent       == 'undefined' ? 5 : charObj.hpCurrent,
+		playerId:        charObj.playerId
+	}
+	return newCharObj;
 }
 		
 module.exports = Character

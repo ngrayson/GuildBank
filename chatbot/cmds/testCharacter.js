@@ -21,15 +21,35 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
-	let sansBar = Character.newCharacter({
+
+	log(' | testing character initialization...',true)
+	log(' | deleting old Sansbar Illyn..')
+	Character.find({
 		firstName: 'Sansbar',
 		lastName: 'Illyn'
-	});
-	sansBar.then( res => {
-		log(`new character created`,true);
-		let msg = message.channel.send('Successfully created Sansbar');
-	}).catch( err => {
+	}).then(res => {
+		if(res.length > 0){
+			res[0].deleteOne();
+			log(' | old Sansbar deleted',true)
+		}
+		else {
+			log(' | no Sansbar exists yet',true)
+		}
+	}).catch(err => {
 		log(err,true)
-		let msg = message.channel.send('ERROR creating Sansbar:\n'+err)
+		let msg = message.channel.send(' | ERROR deleting the old Sansbar:\n'+err)
+	}).finally( () => {
+		log(' | making Sansbar anew',true)
+		let sansBar = Character.newCharacter({
+			firstName: 'Sansbar',
+			lastName: 'Illyn'
+		});
+		sansBar.then( res => {
+			let msg = message.channel.send('Successfully created Sansbar\n' + res);
+		}).catch( err => {
+			log(err,true)
+			let msg = message.channel.send('ERROR creating Sansbar:\n'+err)
+		})
+		
 	})
 }

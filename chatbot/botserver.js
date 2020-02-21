@@ -167,11 +167,11 @@ function message(msg) {
 
 			if(true || userPermFlags & cmdUserPermFlags > 1) {
 				// if you get an error here, make sure the run function in the cmd file is async
+				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
 				cmd.run(bot, msg, args).catch( err => {
 					log('something went wrong with that command... ',true)
 					log(err,true)
 				});
-				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
 			} else {
 				msg.author.createDM().then( channel => {
 					channel.send(`*${msg.content}* is not a valid command for your permission level`)

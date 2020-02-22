@@ -5,6 +5,7 @@ const util = require('../util/util.js');
 const log = util.log;
 const characterOptions = require('../characterOptions.js');
 const Character = require('../db/Character.js');
+const User = require('../db/User.js');
 const userExists = require('../GuildHall/userManager.js').isInitialized;
 
 const db = require('../db/db.js');
@@ -12,13 +13,27 @@ const db = require('../db/db.js');
 let characters = [];
 
 function newPlayerCharacter(firstName, lastName, userId) {
-	let newChar = Character.newCharacter({
-		firstName: firstName,
-		lastName: lastName,
-		userId: userId
+	return new Promise((resolve,reject) => {
+		let newChar = Character.newCharacter({
+			firstName: firstName,
+			lastName: lastName,
+			userId: userId
+		}).then( character => {
+			log('checking default character for user..',true)
+			User.fromMongooseId(userId).then( user => {
+				if(typeof user.defaultCharacter == "undefined") {
+					log(`user has no default character! setting ${character.fullName} as default..`,true)
+					user.setMain(character);
+				}
+				resolve(character);
+			}).catch( err  => {
+				log('something went wrong when fetching user, user character was not checked or set to new character',true)
+				log(err, true);
+			})
+		}).catch( err => {
+			reject(err);
+		})
 	})
-	log(newChar,true)
-	return newChar;
 }
 
 

@@ -14,7 +14,7 @@ let characterSchema = new mongoose.Schema({
 	lastName: String,
 	nickName: String,
 	nameShort: String,
-	playerId: mongoose.ObjectId,
+	userId: mongoose.ObjectId,
 	experience: Number,
 	charClass: String,
 	charSubclass: String,
@@ -102,14 +102,14 @@ characterSchema.methods.addExperience = function(amount) {
 
 characterSchema.methods.addResonite = function(amount) {
 	log('the addResonite function is unfinished',true);
-	// get player( this.playerid)
-	// player.addresonite		
+	// get ( this.id)
+	// .addresonite		
 }
 
 characterSchema.methods.removeResonite = function(amount) {
 	log('the removeResonite function is unfinished',true);
-	// get player( this.playerid)
-	// player.removeresonite	
+	// get ( this.id)
+	// .removeresonite	
 }
 
 characterSchema.methods.level = function(){
@@ -137,7 +137,7 @@ characterSchema.statics.listCharacters = function() {
 characterSchema.statics.fromUserId = function(userMongooseId) {
 	log('userMongooseId', true)
 	log(userMongooseId, true)
-	return Character.find({playerId: userMongooseId});
+	return Character.find({Id: userMongooseId});
 }
 
 // returns a promise for the characters for a given character Id
@@ -225,6 +225,8 @@ function levelFromExperience(experience){
 }
 
 function initializeFields(charObj){
+	log('initializeFields(charObj):',true)
+	log(charObj,true)
 	let newCharObj = {
 		firstName: 	     typeof charObj.firstName       == 'undefined' ? 'DEFAULT' : charObj.firstName,
 		lastName:        typeof charObj.lastName        == 'undefined' ? 'DEFAULT' : charObj.lastName,
@@ -242,7 +244,7 @@ function initializeFields(charObj){
 		hpCurrent:       typeof charObj.hpCurrent       == 'undefined' ? 5 : charObj.hpCurrent,
 		skills:          typeof charObj.skills          == 'undefined' ? {} : charObj.skills,
 		reputations:     typeof charObj.reputations     == 'undefined' ? {} : charObj.reputations,
-		playerId:        charObj.playerId,
+		userId:          charObj.userId,
 		isDeleted:	false
 	}
 	return newCharObj;
@@ -256,7 +258,7 @@ class Character {
 
 
 	// nameFull = '';
-	// playerId = '';
+	// Id = '';
 	// nameShort = null;
 	// dateCreated = new Date();
 	// experience = 0;
@@ -266,14 +268,14 @@ class Character {
 	// currentActivity = null;
 
 
-	constructor(nameFull,playerId) {
+	constructor(nameFull,Id) {
 		// check to make sure namefull is a string
-		// check to make sure playerid is a string
+		// check to make sure id is a string
 
 		// all of these should be functions that read from the db
 
 		this.nameFull = nameFull;
-		this._playerId = playerId; // make this private
+		this.Id = Id; // make this private
 		this.nameShort = nameFull.charAt(0); 
 		this.dateCreated = new Date(); // make this private
 		this.experience = 0; // make this private
@@ -339,8 +341,8 @@ class Character {
 		log(typeof charObj.character_name_full)
 		log('character_name_short: ' + charObj.character_name_short)
 		log(typeof charObj.character_name_short)
-		log('player_id: ' + charObj.player_id)
-		log(typeof charObj.player_id)
+		log('_id: ' + charObj._id)
+		log(typeof charObj._id)
 		log('date_created: ' + charObj.date_created)
 		log(typeof charObj.date_created)
 		log('experience: ' + charObj.experience)
@@ -365,25 +367,25 @@ class Character {
 
 	addResonite(amount){
 		log('the addResonite function is unfinished',true);
-		// get player( this.playerid)
-		// player.addresonite		
+		// get ( this.id)
+		// .addresonite		
 	}
 	
 	removeResonite(amount){
 		log('the removeResonite function is unfinished',true);
-		// get player( this.playerid)
-		// player.removeresonite	
+		// get ( this.id)
+		// .removeresonite	
 	}
 
 	level(){
 		return levelFromExperience(this.experience);
 	}
 
-	set playerId(playerId){ //interrupt the setting of playerId
-		if(this.playerId)
-			throw 'Illegal operation, cannot chaneg playerId';
+	set Id(Id){ //interrupt the setting of Id
+		if(this.Id)
+			throw 'Illegal operation, cannot chaneg Id';
 		else
-			this._playerId = playerId;
+			this.Id = Id;
 	}
 }
 
@@ -394,7 +396,7 @@ class Character {
 // 	let charObj = {
 // 		character_name_full: charClass.nameFull,
 // 		character_name_short: charClass.nameShort,
-// 		player_id: charClass._playerId,
+// 		_id: charClass.Id,
 // 		date_created: charClass.dateCreated,
 // 		experience: charClass.experience,
 // 		moneyCp: charClass.moneyCp,

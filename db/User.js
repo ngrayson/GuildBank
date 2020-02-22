@@ -115,14 +115,27 @@ userSchema.statics.fromDiscordId = function(discord_id){
   return User.find({'connections.discord.discord_id': discord_id })
 }
 
+userSchema.statics.fromMongooseId = function(mongooseId){
+  return User.findById(mongooseId);
+}
 
 /* Methods */
  
 userSchema.methods.setMain = function(character){
-	log('character.constructor.collection.name',true)
-	log(character.constructor.collection.name,true)
-  log(character.userId,true);
-
+  if(character.constructor.collection.name != 'characters')
+  throw 'setMain requires an object of class Character!'
+  let charUId = character.userId.toString();
+  let userId = this._id.toString();
+  log(`User.setMain:\nuserUserId: ${userId } type ${typeof userId }\n`
+                    +`charUserId: ${charUId} type ${typeof charUId}`)
+  log(`They are ${charUId == userId? 'identical':'different'}.`)
+  log(`User.setmain: setting ${character.fullName} as default for ${User.handle}`,true)
+  if(charUId == userId) {
+    this.defaultCharacter = character._id;
+    log(`default character is now ${this.defaultCharacter}`,true)
+    return this.save();
+  }
+  else throw `cannot set a character not belongning to this user as his main`
 }
  
  

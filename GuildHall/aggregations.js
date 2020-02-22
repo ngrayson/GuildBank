@@ -21,7 +21,7 @@ async function userStatsBlurb(user){
   txt += `${resonite} Resonite\n`;
   txt += `${numCharacters} Characters\n`;
   txt += `default character: ${character.fullName}\n`;
-  txt += `> lvl ${character.level} ${character.race} ${character.charSubclass} ${character.charClass}\n`;
+  txt += `> lvl ${character.level} ${character.charRace} ${character.charSubclass} ${character.charClass}\n`;
   txt += `> ${character.xpToLevel} xp until lvl ${character.level+1}\n`;
   txt += `> HP: ${character.hpCurrent}/${character.hpMax}\n`;
   txt += `> Hit Dice: ${character.hitDieCurrent}/${character.level}\n`;

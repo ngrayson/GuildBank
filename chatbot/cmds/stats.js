@@ -1,6 +1,6 @@
-const Character = require('../../db/Character.js');
-const User = require('../../db/User.js');
 const log = require('../../util/util.js').log;
+const userManager = require('../../GuildHall/userManager.js')
+const aggregations = require('../../GuildHall/aggregations.js')
 
 module.exports.help = {
 	name: 'stats',
@@ -22,6 +22,7 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
-
-	
+	let user = await userManager.getUserByDiscordId(message.author.id);
+	let txt = await aggregations.userStatsBlurb(user);
+	let msg = await message.channel.send(txt)
 }

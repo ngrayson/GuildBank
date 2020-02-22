@@ -6,32 +6,11 @@ const db = require('../db/db.js');
 
 
 // getUser
-function getUser(id){
-	return new Promise((resolve, reject) => {
-		let filter =
-			{ 
-				name: {
-					// discord: {
-						// discord_id: id
-					// }
-				}
-			};
-		log('filter:')
-		log(filter);
-		User.where('connections.discord.discord_id',id).exec((err, res) => {
-		// User.find(filter, (err, res) => {
-			if (err) {
-				log(`error getting user with id ${id}`,true)
-				log (err,true)
-				reject(`no user found with id ${id}`)
-			}
-			log(res) 
-			if (res.length == 0) resolve (false);
-			else {
-				resolve(res);
-			}
-		})
-	});
+async function getUserByDiscordId(id){
+	log('getting user by discord ID..')
+	let user = await User.fromDiscordId(id);
+	log(user)
+	return user;
 }
 
 function initializeUser(newUser){
@@ -134,6 +113,6 @@ async function permissions(id){
 }
 
 module.exports = {
-	getUser,
+	getUserByDiscordId,
 	initializeUser
 }

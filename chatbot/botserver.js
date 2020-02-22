@@ -132,7 +132,7 @@ function message(msg) {
 			// unfinished
 		}
 
-		userManager.getUser(msg.author.id).then( user => {
+		userManager.getUserByDiscordId(msg.author.id).then( user => {
 			if(!user){
 				log('command sent by a non-user, ignoring them',true)
 				msg.author.createDM().then( channel => {

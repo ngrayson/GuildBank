@@ -12,7 +12,6 @@ const db = require('../db/db.js');
 let characters = [];
 
 
-
 async function initializeCharacter(nameFull,userId){
 	log(`initializing character ${nameFull}`);
 	let newChar = new Character(nameFull,userId);

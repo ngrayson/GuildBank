@@ -1,6 +1,6 @@
 const log = require('../../util/util.js').log;
 const symDiff = require('../../util/util.js').symDiff;
-const userManager = require('../../db/userManager.js');
+const userManager = require('../../GuildHall/userManager.js');
 
 function newRole(oldMember,newMember) {
 	let playerName = newMember.user.nickname == null ? newMember.user.username : newMember.user.nickname;

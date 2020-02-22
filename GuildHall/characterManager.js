@@ -5,7 +5,7 @@ const util = require('../util/util.js');
 const log = util.log;
 const characterOptions = require('../characterOptions.js');
 const Character = require('../db/Character.js');
-const userExists = require('../db/userManager.js').isInitialized;
+const userExists = require('../GuildHall/userManager.js').isInitialized;
 
 const db = require('../db/db.js');
 

@@ -1,5 +1,4 @@
 const log = require('../util/util.js').log;
-const validators = require('./db_validators.js');
 const mongoose = require('mongoose');
 const Schema = require('validate');
 
@@ -77,7 +76,8 @@ function addEntry(newObj,collection) {
 				log(`ERROR adding entry to ${collection}, collection error`, true)
 				return log(err, true);
 			}
-			let check = validators[collection].validate(newObj);
+			throw "Nick needs to remove validaiton code here, should be handled by 'the mongoose'"
+			let check = 0;
 			if(check.length == 0){
 				col.insertOne(newObj, (err, result) => {
 					if (err) {

@@ -23,11 +23,12 @@ const userSchema = new Schema({
     },
     google: String
   },
-  created_at: Date,
+  isDeleted: Boolean,
   last_seen: Date,
   email: String,
   handle: String,
   is_active_player: Boolean,
+  defaultCharacter: mongoose.ObjectId,
   name: {
     first: String,
     last: String
@@ -35,25 +36,6 @@ const userSchema = new Schema({
   current_system: String,
   scopes: []
 }, schemaOptions);
- 
-/* Static Methods */
-userSchema.statics.listUsers = function() {
-	return new Promise((resolve,reject) => {
-		User.find().then(res => {
-			let txt = `__**${res.length} user${res.length == 1 ? '' : 's'} currently initialized:**__\n`;
-      let index = 1;
-      res.forEach( user => {
-        txt += index + '. ' +
-        (user.handle ? user.handle : user.connections.discord.discord_handle) + '\n';
-        index++;
-      })
-			resolve(txt)
-		}).catch( err => {
-			log('error finding users', true)
-			reject(err);
-		})
-	})
-}
 
 /* Virtuals */
 
@@ -106,9 +88,40 @@ userSchema.virtual('isSetup').get( () => {
   return true;
 });
 
+userSchema.virtual('mainCharacter').get( () => {
+  return true;
+});
+
+userSchema.virtual('numCharacters').get( () => {
+  return true;
+});
+ 
+/* Static Methods */
+userSchema.statics.listUsers = function() {
+	return new Promise((resolve,reject) => {
+		User.find().then(res => {
+			let txt = `__**${res.length} user${res.length == 1 ? '' : 's'} currently initialized:**__\n`;
+      let index = 1;
+      res.forEach( user => {
+        txt += index + '. ' +
+        (user.handle ? user.handle : user.connections.discord.discord_handle) + '\n';
+        index++;
+      })
+			resolve(txt)
+		}).catch( err => {
+			log('error finding users', true)
+			reject(err);
+		})
+	})
+}
+
+userSchema.statics.fromDiscordId = function(discord_id){
+  return User.find({'connections.discord.discord_id': discord_id })
+}
 
 /* Methods */
  
+
  
  
 /* Compile Model */

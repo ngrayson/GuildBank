@@ -21,10 +21,13 @@ let characterSchema = new mongoose.Schema({
 	currentActivity: String,
 	moneyCP: Number,
 	location: String,
-	Inventory: Object,
+	inventory: Object,
 	hitDieCurrent: Number,
 	hpMax: Number,
-	hpCurrent: Number
+	hpCurrent: Number,
+	skills: Object,
+	reputations: Object,
+	isDeleted: Boolean
 },
 { 
 	timestamps: true,
@@ -129,12 +132,34 @@ characterSchema.statics.listCharacters = function() {
 	})
 }
 
+// returns a promise for the characters belonging to a user
+characterSchema.statics.fromUserId = function(userMongooseId) {
+	return Character.find({ playerId: userMongooseId});
+}
+
+// returns a promise for the characters for a given character Id
+characterSchema.statics.fromCharacterId = function(characterMongooseId) {
+	return Character.findById(characterMongooseId);
+}
+
 let Character = mongoose.model('Character', characterSchema)
+
+/* Private Methods */
 
 async function checkNewCharacter(charObj){
 	if(charObj.firstName && charObj.lastName) {
 		// check to make sure that the character has a unique name
 		let charOK = true;
+
+		if(charObj.firstName.length + charObj.lastName.length < 3) {
+			msg.edit(`the name "${nameFull}" is too short. Character names must be at least 3 characters.`);
+			return null
+		}
+	
+		if(charObj.firstName.length + charObj.lastName.length >= 32) {
+			msg.edit(`the name "${nameFull}" is too long. Character names cant be over 32 characters.`);
+			return null
+		}
 
 		let namePromise = Character.find({
 			firstName: charObj.firstName,
@@ -204,11 +229,14 @@ function initializeFields(charObj){
 		currentActivity: typeof charObj.currentActivity == 'undefined' ? 'none' : charObj.currentActivity,
 		moneyCP:         typeof charObj.moneyCP         == 'undefined' ? 0 : charObj.moneyCP,
 		location:        typeof charObj.location        == 'undefined' ? 'Foxbarrow Farms' : charObj.location,
-		Inventory:       typeof charObj.Inventory       == 'undefined' ? {} : charObj.Inventory,
+		inventory:       typeof charObj.inventory       == 'undefined' ? {} : charObj.inventory,
 		hitDieCurrent:   typeof charObj.hitDieCurrent   == 'undefined' ? 1 : charObj.hitDieCurrent,
 		hpMax:           typeof charObj.hpMax           == 'undefined' ? 5 : charObj.hpMax,
 		hpCurrent:       typeof charObj.hpCurrent       == 'undefined' ? 5 : charObj.hpCurrent,
-		playerId:        charObj.playerId
+		skills:          typeof charObj.skills          == 'undefined' ? {} : charObj.skills,
+		reputations:     typeof charObj.reputations     == 'undefined' ? {} : charObj.reputations,
+		playerId:        charObj.playerId,
+		isDeleted:	false
 	}
 	return newCharObj;
 }

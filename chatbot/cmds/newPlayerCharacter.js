@@ -1,6 +1,7 @@
 // newCharacter.js
 const log = require('../../util/util.js').log;
-let characterManager = require('./../../GuildHall/characterManager.js');
+let Character = require('../../db/Character.js');
+let User = require('../../db/User.js');
 
 module.exports.run = async(bot, message, args) => {
 	let msg = await message.channel.send("generating character...")
@@ -12,11 +13,11 @@ module.exports.run = async(bot, message, args) => {
 	nameArray.forEach((word, index) => {
 		nameArray[index] = word.replace(/^\w/, c => c.toUpperCase())
 	})
-	let nameFull = nameArray.join(' ');
+	let fullName = nameArray.join(' ');
+	let firstName = nameArray[0];
+	let lastName = nameArray.slice(1).join('-');
 
-	log(nameFull,true)
-
-	log(`Running new Character for ${nameFull}...`)
+	log(`Running new Character for ${fullName}...`)
 
 	// check to see if discord ID is valid
 	let guilds = bot.guilds;
@@ -33,19 +34,16 @@ module.exports.run = async(bot, message, args) => {
 		return null;
 	}
 
-	if(nameFull.length < 3) {
-		msg.edit(`the name "*${nameFull}*" is too short. Character names must be at least 3 characters.`);
-		return null
-	}
-
-	if(nameFull.length >= 32) {
-		msg.edit(`the name "*${nameFull}*" is too long. Character names cant be over 32 characters.`);
-		return null
-	}
-
+	// find player by member.id
+	let user = await User.fromDiscordId(member.id);
+	log(user,true)
 	try {
-		let newChar = await characterManager.initializeCharacter(nameFull,member.id);
-		msg.edit(`New character generated: *${newChar.nameFull}*`);
+		let newChar = await Character.newCharacter({
+			firstName: firstName,
+			lastName: lastName,
+			playerId: user._id
+		})
+		msg.edit(`New character generated: *${newChar.fullName}*`);
 	}
 	catch (err) {
 		msg.edit(`something went wrong ${err}`);
@@ -63,8 +61,8 @@ module.exports.run = async(bot, message, args) => {
 }
 
 module.exports.help = {
-	name: 'newCharacter',
-	description: 'initializes new character\nsyntax:\n!newCharacter @<user> <nameFull>'
+	name: 'newPlayerCharacter',
+	description: 'initializes new character\nsyntax:\n!newCharacter @<user> <fullName>'
 }
 
 module.exports.permissions = {

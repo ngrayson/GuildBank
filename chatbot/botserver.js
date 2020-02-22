@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const guildManager = require('./guildManager.js');
-const userManager = require('./../db/userManager')
+const userManager = require('./../GuildHall/userManager')
 const token = process.env.DBOT_TOKEN;
 
 const roleChange = require('./events/roleChange.js') // if more events are added this should be abstracted out

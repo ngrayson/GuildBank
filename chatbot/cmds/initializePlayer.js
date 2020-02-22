@@ -1,4 +1,4 @@
-const users = require('../../db/userManager.js');
+const users = require('../../GuildHall/userManager.js');
 const log = require('../../util/util.js').log;
 const util = require('../../util/util.js');
 

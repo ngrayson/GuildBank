@@ -11,6 +11,7 @@ async function userStatsBlurb(user){
   let handle = user.handle;
   let resonite = 0;
   let character = await Character.fromCharacterId(user.defaultCharacter); // querey all characters by user's mongooseID
+  if(character){} else throw 'userStatsBlurbError: default character is ' + character;
   let characters = await Character.fromUserId(user._id); // primary character
   let numCharacters = characters.length
   let adventures = 0; // querey all adventures including user's mongooseID
@@ -20,14 +21,14 @@ async function userStatsBlurb(user){
   txt += `${resonite} Resonite\n`;
   txt += `${numCharacters} Characters\n`;
   txt += `default character: ${character.fullName}\n`;
-  txt += `> lvl {character.level} {character.race} {character.subclass} {character.class}\n`;
-  txt += `> {character.xpToLevel} xp until lvl {character.level+1}\n`;
-  txt += `> HP: {character.currentHp}/{character.maxHp}\n`;
-  txt += `> Hit Dice: {character.hitDiceCurrent}/{character.hitDiceMax}\n`;
-  txt += `> Currently {character.activity} in {character.location}\n`;
-  txt += `> {character.moneyToString}\n`;
+  txt += `> lvl ${character.level} ${character.race} ${character.charSubclass} ${character.charClass}\n`;
+  txt += `> ${character.xpToLevel} xp until lvl ${character.level+1}\n`;
+  txt += `> HP: ${character.hpCurrent}/${character.hpMax}\n`;
+  txt += `> Hit Dice: ${character.hitDieCurrent}/${character.level}\n`;
+  txt += `> ${character.moneyToString}\n`;
+  txt += `> Currently ${character.currentActivity} in ${character.location}\n`;
   txt += `> Conditions:\n`;
-  txt += `> {character.conditions}\n`;
+  txt += `> ${character.conditions}\n`;
   txt += `Adventures: - planned\n`;
   txt += `> Next Adventure: adventure.name\n`;
   txt += `> {adventure.date}, {adventure.time}, {adventure.location}\n`;

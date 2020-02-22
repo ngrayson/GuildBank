@@ -115,7 +115,7 @@ userSchema.statics.fromDiscordId = function(discord_id){
   return User.find({'connections.discord.discord_id': discord_id })
 }
 
-userSchema.statics.fromMongooseId = function(mongooseId){
+userSchema.statics.fromUserId = function(mongooseId){
   return User.findById(mongooseId);
 }
 

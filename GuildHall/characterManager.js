@@ -12,28 +12,29 @@ const db = require('../db/db.js');
 
 let characters = [];
 
-function newPlayerCharacter(firstName, lastName, userId) {
-	return new Promise((resolve,reject) => {
-		let newChar = Character.newCharacter({
-			firstName: firstName,
-			lastName: lastName,
-			userId: userId
-		}).then( character => {
-			log('checking default character for user..',true)
-			User.fromMongooseId(userId).then( user => {
-				if(typeof user.defaultCharacter == "undefined") {
-					log(`user has no default character! setting ${character.fullName} as default..`,true)
-					user.setMain(character);
-				}
-				resolve(character);
-			}).catch( err  => {
-				log('something went wrong when fetching user, user character was not checked or set to new character',true)
-				log(err, true);
-			})
-		}).catch( err => {
-			reject(err);
-		})
+async function newPlayerCharacter(firstName, lastName, userId) {
+	let newChar = await Character.newCharacter({
+		firstName: firstName,
+		lastName: lastName,
+		userId: userId
 	})
+
+	log('checking default character for user..',true)
+	let user = await User.fromUserId(userId)
+	let defaultCharacter;
+	try {
+		defaultCharacter = await Character.fromCharacterId(user.defaultCharacter);
+		if(defaultCharacter) {} else throw 'default character is '+defaultCharacter
+		if(defaultCharacter.isDead) throw 'default character is dead'
+		if(defaultCharacter.isDeleted) throw 'default character is deleted'
+	}
+	catch(err){
+		log(err,true)
+		log(`user has no default character! setting ${newChar.fullName} as default..`,true)
+		user.setMain(newChar);
+	}
+	return newChar;
+
 }
 
 

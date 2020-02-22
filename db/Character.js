@@ -16,10 +16,11 @@ let characterSchema = new mongoose.Schema({
 	nameShort: String,
 	userId: mongoose.ObjectId,
 	experience: Number,
+	charRace: String,
 	charClass: String,
 	charSubclass: String,
 	currentActivity: String,
-	moneyCP: Number,
+	moneyCp: Number,
 	location: String,
 	inventory: Object,
 	hitDieCurrent: Number,
@@ -27,6 +28,7 @@ let characterSchema = new mongoose.Schema({
 	hpCurrent: Number,
 	skills: Object,
 	reputations: Object,
+	isDead: Boolean,
 	isDeleted: Boolean
 },
 { 
@@ -77,23 +79,31 @@ characterSchema.virtual('fullName').get( function() {
 	return fullName;
 })
 
-characterSchema.methods.moneyString = function() {
+characterSchema.virtual('level').get( function(){
+	return levelFromExperience(this.experience);
+})
+
+characterSchema.virtual('moneyToString').get( function() {
 	let moneyString = '';
-		let money = 14922; //this.moneyCp;
-		let gold = Math.floor(money/100);
-		money -= gold*100;
-		
-		let silver = Math.floor(money/10);
-		money -= silver*10;
-		
-		let copper = money;
+	let money = this.moneyCp;
+	log('moneyToString: money',true)
+	log(money,true)
+	let gold = Math.floor(money/100);
+	money -= gold*100;
+	
+	let silver = Math.floor(money/10);
+	money -= silver*10;
+	
+	let copper = money;
 
-		moneyString += gold + ' gp, '
-		moneyString += silver + ' sp, '
-		moneyString += copper + ' cp'
+	moneyString += gold + ' Gp, '
+	moneyString += silver + ' Sp, '
+	moneyString += copper + ' Cp'
 
-		return moneyString
-}
+	return moneyString
+})
+
+/* Methods */
 
 characterSchema.methods.addExperience = function(amount) {
 	this.experience += amount;
@@ -110,10 +120,6 @@ characterSchema.methods.removeResonite = function(amount) {
 	log('the removeResonite function is unfinished',true);
 	// get ( this.id)
 	// .removeresonite	
-}
-
-characterSchema.methods.level = function(){
-	return levelFromExperience(this.experience);
 }
 
 /* Statics */
@@ -217,7 +223,7 @@ async function checkNewCharacter(charObj){
 }
 
 function levelFromExperience(experience){
-	if (typeof experience != int)
+	if (typeof experience != "number")
 		throw 'cannot find level from a non-integer amount of experience'
 	else {
 		 return characterOptions.levelThresholds.findIndex((element => element > experience)) + 1;
@@ -233,10 +239,11 @@ function initializeFields(charObj){
 		nickName:        typeof charObj.nickName        == 'undefined' ? 'DEFAULT' : charObj.nickName,
 		nameShort:       typeof charObj.nameShort       == 'undefined' ? 'DEFAULT' : charObj.nameShort,
 		experience:      typeof charObj.experience      == 'undefined' ? 0 : charObj.experience,
-		charClass:       typeof charObj.charClass       == 'undefined' ? 'none' : charObj.charClass,
-		charSubclass:    typeof charObj.charSubclass    == 'undefined' ? 'none' : charObj.charSubclass,
-		currentActivity: typeof charObj.currentActivity == 'undefined' ? 'none' : charObj.currentActivity,
-		moneyCP:         typeof charObj.moneyCP         == 'undefined' ? 0 : charObj.moneyCP,
+		charRace:        typeof charObj.charRace        == 'undefined' ? 'Wax Figure' : charObj.charRace,
+		charClass:       typeof charObj.charClass       == 'undefined' ? 'Peasant' : charObj.charClass,
+		charSubclass:    typeof charObj.charSubclass    == 'undefined' ? 'Filthy' : charObj.charSubclass,
+		currentActivity: typeof charObj.currentActivity == 'undefined' ? 'Waiting' : charObj.currentActivity,
+		moneyCp:         typeof charObj.moneyCp         == 'undefined' ? 1000 : charObj.moneyCp,
 		location:        typeof charObj.location        == 'undefined' ? 'Foxbarrow Farms' : charObj.location,
 		inventory:       typeof charObj.inventory       == 'undefined' ? {} : charObj.inventory,
 		hitDieCurrent:   typeof charObj.hitDieCurrent   == 'undefined' ? 1 : charObj.hitDieCurrent,
@@ -245,6 +252,7 @@ function initializeFields(charObj){
 		skills:          typeof charObj.skills          == 'undefined' ? {} : charObj.skills,
 		reputations:     typeof charObj.reputations     == 'undefined' ? {} : charObj.reputations,
 		userId:          charObj.userId,
+		isDead:  	false,
 		isDeleted:	false
 	}
 	return newCharObj;

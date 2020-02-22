@@ -1,5 +1,6 @@
 // newCharacter.js
 const log = require('../../util/util.js').log;
+let characterManager = require('../../GuildHall/characterManager.js')
 let Character = require('../../db/Character.js');
 let User = require('../../db/User.js');
 
@@ -35,14 +36,11 @@ module.exports.run = async(bot, message, args) => {
 	}
 
 	// find player by member.id
-	let user = await User.fromDiscordId(member.id);
+	let userQuerey = await User.fromDiscordId(member.id);
+	let user = userQuerey[0]
 	log(user,true)
 	try {
-		let newChar = await Character.newCharacter({
-			firstName: firstName,
-			lastName: lastName,
-			playerId: user._id
-		})
+		let newChar = await characterManager.newPlayerCharacter(firstName, lastName, user._id)
 		msg.edit(`New character generated: *${newChar.fullName}*`);
 	}
 	catch (err) {

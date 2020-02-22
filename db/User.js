@@ -88,10 +88,6 @@ userSchema.virtual('isSetup').get( () => {
   return true;
 });
 
-userSchema.virtual('mainCharacter').get( () => {
-  return true;
-});
-
 userSchema.virtual('numCharacters').get( () => {
   return true;
 });
@@ -119,9 +115,15 @@ userSchema.statics.fromDiscordId = function(discord_id){
   return User.find({'connections.discord.discord_id': discord_id })
 }
 
+
 /* Methods */
  
+userSchema.methods.setMain = function(character){
+	log('character.constructor.collection.name',true)
+	log(character.constructor.collection.name,true)
+  log(character.userId,true);
 
+}
  
  
 /* Compile Model */

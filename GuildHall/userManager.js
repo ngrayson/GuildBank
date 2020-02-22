@@ -2,6 +2,7 @@ const util = require('../util/util.js');
 const log = util.log;
 
 const User = require('../db/User.js')
+const Character = require('../db/Character.js')
 const db = require('../db/db.js');
 
 
@@ -62,6 +63,7 @@ function initializeUser(newUser){
 	})
 }
 
+
 async function updateUserNameById(id, name){
 	let UserSearch = await db.getElementIn({discordId: id} ,'Users') 
 	if(!UserSearch)
@@ -71,6 +73,7 @@ async function updateUserNameById(id, name){
 		db.editEntry('Users', {discordId: id}, { $set: {discordHandle: name}})
 	}
 }
+
 
 // updates a User's permissions where the permissions Object is of format
 // permissions: {

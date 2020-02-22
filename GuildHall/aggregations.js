@@ -3,11 +3,16 @@ const User = require('../db/User.js');
 const log = require('../util/util.js').log;
 
 async function userStatsBlurb(user){
+    log('user',true)
+    log(user,true)
+    log('user.id',true)
+    log(user.id,true)
   let txt = "";
   let handle = user.handle;
   let resonite = 0;
-  let numCharacters = 0; // querey all characters by user's mongooseID
-  let character = 0; // primary character
+  let character = await Character.fromCharacterId(user.defaultCharacter); // querey all characters by user's mongooseID
+  let characters = await Character.fromUserId(user._id); // primary character
+  let numCharacters = characters.length
   let adventures = 0; // querey all adventures including user's mongooseID
   // get character
   txt += `__**stats for ${handle}**__\n`;

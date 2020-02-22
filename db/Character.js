@@ -38,6 +38,7 @@ let characterSchema = new mongoose.Schema({
 //  if everything looks good then saves the character and passes it back
 characterSchema.statics.newCharacter = function(charObj) {
 	return new Promise((resolve,reject) => {
+		log('attempting to create new Character...',true)
 		let newCharCheck = checkNewCharacter(charObj);
 
 		newCharCheck.then( (res) => {
@@ -134,7 +135,9 @@ characterSchema.statics.listCharacters = function() {
 
 // returns a promise for the characters belonging to a user
 characterSchema.statics.fromUserId = function(userMongooseId) {
-	return Character.find({ playerId: userMongooseId});
+	log('userMongooseId', true)
+	log(userMongooseId, true)
+	return Character.find({playerId: userMongooseId});
 }
 
 // returns a promise for the characters for a given character Id
@@ -147,65 +150,69 @@ let Character = mongoose.model('Character', characterSchema)
 /* Private Methods */
 
 async function checkNewCharacter(charObj){
-	if(charObj.firstName && charObj.lastName) {
-		// check to make sure that the character has a unique name
-		let charOK = true;
-
-		if(charObj.firstName.length + charObj.lastName.length < 3) {
-			msg.edit(`the name "${nameFull}" is too short. Character names must be at least 3 characters.`);
-			return null
-		}
+	log('checking character...',true)
+	if(!(charObj.firstName)) throw 'character must have a name'
+	let fullName = charObj.firstName + (charObj.lastName ? " " + charObj.lastName : "");
 	
-		if(charObj.firstName.length + charObj.lastName.length >= 32) {
-			msg.edit(`the name "${nameFull}" is too long. Character names cant be over 32 characters.`);
-			return null
+	// check to make sure that the character has a unique name
+	let charOK = true;
+
+	if(charObj.firstName.length + charObj.lastName.length < 3) {
+		throw `the name "${nameFull}" is too short. Character names must be at least 3 characters.`
+		return null
+	}
+	else if(charObj.firstName.length + charObj.lastName.length >= 32) {
+		throw `the name "${nameFull}" is too long. Character names cant be over 32 characters.`
+		return null
+	}
+	else {
+		log('name is okay',true)
+	}
+
+	let namePromise = Character.find({
+		firstName: charObj.firstName,
+		lastName: charObj.lastName
+	}).then( res => {
+		log(`Character name search for ${charObj.firstName} ${charObj.lastName}:`,true)
+		log(res,true);
+
+		log(res.length + ' character(s) found',true);
+		if(res.length > 0) {
+			log('rejecting...',true)
+			charOK = false;
+			throw 'Character with that name already exists';
 		}
+	}).catch( err => {
+		if(err) {
+			charOK = false;
+			throw err; 
+		}
+	})
 
-		let namePromise = Character.find({
-			firstName: charObj.firstName,
-			lastName: charObj.lastName
+	if(charObj.nickName) {
+		let nicknamePromise = await Character.find({
+			nickName: charObj.nickName
 		}).then( res => {
-			log(`Character name search for ${charObj.firstName} ${charObj.lastName}:`,true)
-			log(res,true);
+			log(`Character nickname search for ${charObj.nickName}:`,true)
 
-			log(res.length + ' character(s) found',true);
+			log(res, true);
 			if(res.length > 0) {
-				log('rejecting...',true)
-				charOK = false;
-				throw 'Character with that name already exists';
+				charOK = false
+				throw 'Character with that nickname already exists';
 			}
 		}).catch( err => {
-			if(err) {
-				charOK = false;
-				throw err; 
+			if(err){
+				charOK = false
+				throw err
 			}
 		})
+	}
 
-		if(charObj.nickName) {
-			let nicknamePromise = await Character.find({
-				nickName: charObj.nickName
-			}).then( res => {
-				log(`Character nickname search for ${charObj.nickName}:`,true)
+	await namePromise;
 
-				log(res, true);
-				if(res.length > 0) {
-					charOK = false
-					throw 'Character with that nickname already exists';
-				}
-			}).catch( err => {
-				if(err){
-					charOK = false
-					throw err
-				}
-			})
-		}
-
-		await namePromise;
-
-		if(charOK) {
-			log('Character passes all checks',true)
-			return true;
-		}
+	if(charOK) {
+		log('Character passes all checks',true)
+		return true;
 	}
 }
 

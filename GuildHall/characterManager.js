@@ -11,6 +11,27 @@ const db = require('../db/db.js');
 
 let characters = [];
 
+function newPlayerCharacter(firstName, lastName, userId) {
+	let newChar = Character.newCharacter({
+		firstName: firstName,
+		lastName: lastName,
+		userId: userId
+	})
+	log(newChar,true)
+	return newChar;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 async function initializeCharacter(nameFull,userId){
 	log(`initializing character ${nameFull}`);
@@ -49,5 +70,6 @@ async function isInitialized(nameFull){
 
 module.exports = {
 	initializeCharacter,
-	isInitialized
+	isInitialized,
+	newPlayerCharacter
 }

@@ -30,7 +30,8 @@ let characterSchema = new mongoose.Schema({
 	skills: Object,
 	reputations: Object,
 	isDead: Boolean,
-	isDeleted: Boolean
+	isDeleted: Boolean,
+	conditions: Object
 },
 { 
 	timestamps: true,
@@ -82,6 +83,10 @@ characterSchema.virtual('fullName').get( function() {
 
 characterSchema.virtual('level').get( function(){
 	return levelFromExperience(this.experience);
+})
+
+characterSchema.virtual('remainingExperience').get( function(){
+	return remainingExperience(this.experience);
 })
 
 characterSchema.virtual('moneyToString').get( function() {
@@ -227,7 +232,18 @@ function levelFromExperience(experience){
 	if (typeof experience != "number")
 		throw 'cannot find level from a non-integer amount of experience'
 	else {
-		 return characterOptions.levelThresholds.findIndex((element => element > experience)) + 1;
+		return characterOptions.levelThresholds.findIndex((element => element > experience));
+	}
+}
+
+function remainingExperience(experience){
+	if (typeof experience != "number")
+		throw 'cannot find level from a non-integer amount of experience'
+	else {
+		let nextLvl = characterOptions.levelThresholds.findIndex((element => element > experience));
+		let nextThreshold = characterOptions.levelThresholds[nextLvl];
+		let remainingExperience = nextThreshold - experience;
+		return remainingExperience;
 	}
 }
 
@@ -253,6 +269,7 @@ function initializeFields(charObj){
 		hpCurrent:       typeof charObj.hpCurrent       == 'undefined' ? 5 : charObj.hpCurrent,
 		skills:          typeof charObj.skills          == 'undefined' ? {} : charObj.skills,
 		reputations:     typeof charObj.reputations     == 'undefined' ? {} : charObj.reputations,
+		conditions:		 typeof charObj.conditions		== 'undefined' ? {} : charObj.conditions,
 		userId:          charObj.userId,
 		isDead:  	false,
 		isDeleted:	false

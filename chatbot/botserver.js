@@ -1,8 +1,7 @@
 const log = require('../util/util.js').log;
-const messageParser = require(`./messageParser.js/index.js.js`);
+const messageParser = require(`./messageParser.js`);
 
 const reloadBotCommands = require('../util/util.js').reloadBotCommands;
-const invalidCommand = require('./lib/invalidCommand.js');
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
@@ -20,7 +19,6 @@ const bot = new Discord.Client({disableEveryone: true});
 bot.commands = new Discord.Collection();
 reloadBotCommands(bot);
 
-let lastCommandMsg 
 // initialize commands
 
 

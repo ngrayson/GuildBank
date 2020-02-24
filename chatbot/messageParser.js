@@ -4,6 +4,8 @@ const log = require('../util/util.js').log;
 const INVALID_MSG_DELAY_MS = 5000;
 const util = require('../util/util.js');
 
+let lastCommandMsg;
+
 /* This file handles parsing of discord Messages */
 
 function message(bot,msg) {

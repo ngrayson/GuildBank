@@ -82,7 +82,8 @@ function logBar(style, logToCLI) {
 
 	// write to file
 	// write to log channel in admin server
-	if(logToCLI) console.log(str);
+    if(logToCLI) console.log(str);
+    return(str);
 }
 
 // returns the symmetric difference between a number of collections as an arry

@@ -139,7 +139,40 @@ userSchema.methods.setMain = function(character){
   }
   else throw `cannot set a character not belongning to this user as his main`
 }
+
+userSchema.methods.grantAdmin = function(){
+  return new Promise((resolve,reject) => {
+    if(!this.scopes.includes('Admin')) {
+      this.scopes.push('Admin')
+      this.save();
+      resolve(this)
+      log(this,true)
+    }
+    else{
+      let txt = `grantAdmin Warning: ${this.handle} was already an admin`;
+      log(txt,true)
+      reject(txt)
+    }
+  })
+}
  
+userSchema.methods.removeAdmin = function(){
+  return new Promise((resolve,reject) => {
+    let adminIndex = this.scopes.findIndex((element) => {
+      return element == 'Admin'
+    })
+    if(adminIndex != -1) {
+      this.scopes.splice(adminIndex,1)
+      this.save()
+      resolve(this)
+    }
+    else{
+      let txt = `removeAdmin Warning: ${this.handle} was not an admin to begin with`;
+      log(txt,true)
+      reject(txt)
+    }
+  })
+}
  
 /* Compile Model */
 let User = mongoose.model('User', userSchema);

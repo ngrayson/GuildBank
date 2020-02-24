@@ -37,17 +37,28 @@ async function newPlayerCharacter(firstName, lastName, userId) {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
+// awards xp to a character or, if given a user, their default character, or a party
+async function awardXp(target,experience) {
+	log(experience,true)
+	let character;
+	if (target.constructor.collection.name == "characters") {
+		character = target;
+	} else if(target.constructor.collection.name == "users") {
+		log(`awarding xp to ${target.handle}`);
+		character = await Character.fromCharacterId(target.defaultCharacter);
+	} else if(target == 'party'){
+		throw `party xp awarding is not yet implemented`
+	}
+	else throw `you can only award xp to users and characters!`
+	try {
+		return await character.addExperience(experience);
+	}
+	catch(err){
+		log(`characterManager.awardXP Error: `,true)
+		log(err,true)
+		throw(err)
+	}
+}
 
 async function initializeCharacter(nameFull,userId){
 	log(`initializing character ${nameFull}`);
@@ -87,5 +98,6 @@ async function isInitialized(nameFull){
 module.exports = {
 	initializeCharacter,
 	isInitialized,
-	newPlayerCharacter
+	newPlayerCharacter,
+	awardXp
 }

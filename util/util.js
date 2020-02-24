@@ -73,6 +73,25 @@ function name(member){
     return member.nickname ? member.nickname : member.user.username
 }
 
+function isCharacter(obj){
+    try {
+        return obj.constructor.collection.name == "characters"
+    }
+    catch(err){
+        return false
+    }
+}
+
+function isUser(obj){
+    try {
+        return obj.constructor.collection.name == "users"
+    }
+    catch(err){
+        return false
+    }
+
+}
+
 function asciiTable(array) {
     // returns a neat string ascii table of the given array
 }
@@ -80,6 +99,8 @@ function asciiTable(array) {
 module.exports = {
 	log,
 	logBar,
-	symDiff,
+    symDiff,
+    isCharacter,
+    isUser,
     name
 }

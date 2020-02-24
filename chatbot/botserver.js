@@ -142,8 +142,8 @@ function message(msg) {
 			}
 
 			// check to see if user has permissions
-			log('user:')
-			log(user)
+			log('user:',true)
+			log(user,true)
 			// get user role
 			let userPermFlags = 0;
 			if (user.isAdmin) userPermFlags += 4;

@@ -36,8 +36,7 @@ module.exports.run = async(bot, message, args) => {
 	}
 
 	// find player by member.id
-	let userQuerey = await User.fromDiscordId(member.id);
-	let user = userQuerey[0]
+	let user = await User.fromDiscordId(member.id);
 	try {
 		let newCharPromise = characterManager.newPlayerCharacter(firstName, lastName, user._id)
 		log('cmd newPlayerCharacter newCharPromise')

@@ -26,6 +26,6 @@ module.exports.run = async(bot, message, args) => {
 	let user = await userManager.getUserByDiscordId(message.author.id);
 	// get character from 
 	// let character = await characterManager.getCharacterBy
-	let txt = await aggregations.userStatsBlurb(user[0]);
+	let txt = await aggregations.userStatsBlurb(user);
 	let msg = await message.channel.send(txt)
 }

@@ -111,9 +111,10 @@ characterSchema.virtual('moneyToString').get( function() {
 
 /* Methods */
 
-characterSchema.methods.addExperience = function(amount) {
+characterSchema.methods.addExperience = async function(amount) {
+	if (typeof amount != 'number') throw `Character.addExperience ERROR: ${amount} is not a number`
 	this.experience += amount;
-	return this.experience;
+	return this.save();
 }
 
 characterSchema.methods.addResonite = function(amount) {

@@ -39,13 +39,15 @@ const userSchema = new Schema({
 
 /* Virtuals */
 
+
+
 // Concat user's first + last name
-userSchema.virtual('fullName').get( () => {
+userSchema.virtual('fullName').get( function() {
   return this.name.first + ' ' + this.name.last;
 });
  
 // Return true if user is admin
-userSchema.virtual('isAdmin').get( () => {
+userSchema.virtual('isAdmin').get( function() {
   let isAdmin = false;
   // If user is Logan, admin is true
   // !TODO Don't do this LOL
@@ -62,7 +64,7 @@ userSchema.virtual('isAdmin').get( () => {
 });
  
 // Return true if user is Dm
-userSchema.virtual('isDm').get( () => {
+userSchema.virtual('isDm').get( function() {
   let isDm = false;
   // If user is Logan, Dm is true
   // !TODO Don't do this LOL
@@ -78,17 +80,17 @@ userSchema.virtual('isDm').get( () => {
   return isDm;
 });
 
-userSchema.virtual('isPlayer').get( () => {
-  return is_active_player;
+userSchema.virtual('isPlayer').get( function() {
+  return this.is_active_player;
 })
 
 
 // returns true or false based on basic validation critera. players need to provide their name, etc.
-userSchema.virtual('isSetup').get( () => {
+userSchema.virtual('isSetup').get( function() {
   return true;
 });
 
-userSchema.virtual('numCharacters').get( () => {
+userSchema.virtual('numCharacters').get( function() {
   return true;
 });
  
@@ -111,8 +113,8 @@ userSchema.statics.listUsers = function() {
 	})
 }
 
-userSchema.statics.fromDiscordId = function(discord_id){
-  return User.find({'connections.discord.discord_id': discord_id })
+userSchema.statics.fromDiscordId = async function(discord_id){
+  return (await User.find({'connections.discord.discord_id': discord_id }))[0]
 }
 
 userSchema.statics.fromUserId = function(mongooseId){

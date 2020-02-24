@@ -1,8 +1,10 @@
 const DEV_MODE = process.env.DEV_MODE == 1;
-const userManager = require('./../GuildHall/userManager')
+const userManager = require('../GuildHall/userManager')
 const log = require('../util/util.js').log;
 const INVALID_MSG_DELAY_MS = 5000;
 const util = require('../util/util.js');
+
+/* This file handles parsing of discord Messages */
 
 function message(bot,msg) {
     if(bot.constructor.name != 'Client') {

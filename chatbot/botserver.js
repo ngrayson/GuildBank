@@ -1,5 +1,5 @@
 const log = require('../util/util.js').log;
-const messageRouter = require(`./messageRouter.js`);
+const messageParser = require(`./messageParser.js/index.js.js`);
 
 const reloadBotCommands = require('../util/util.js').reloadBotCommands;
 const invalidCommand = require('./lib/invalidCommand.js');
@@ -42,7 +42,7 @@ function run() {
 		});
 
 		bot.on('message', async msg => {
-			messageRouter.message(bot,msg);
+			messageParser.message(bot,msg);
 		})
 
 		bot.on('guildMemberUpdate', (oldMember,newMember) => {

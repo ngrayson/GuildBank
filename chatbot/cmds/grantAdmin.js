@@ -38,7 +38,7 @@ module.exports.run = async(bot, message, args) => {
 			throw `issue with granting to ${args[0]}, please tag the user you wish to give Xp to.`
 		}
 		// do the actual operation
-		let res = await user.grantAdmin();
+		let res = await user.grantRole('Admin');
 		let txt = `successfully granted admin to ${res.handle}`;
 		msg.edit(txt);
 		log(txt,true)

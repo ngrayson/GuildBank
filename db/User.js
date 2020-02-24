@@ -7,7 +7,8 @@ const log = util.log;
 const db = require('./db.js');
 const mongoose = db.mongoose;
 const Schema = mongoose.Schema;
- 
+const ROLE_LIST = ['Admin', 'DM']
+
 /* Schema */
 const schemaOptions = {
   toJSON: { virtuals: true },
@@ -140,10 +141,12 @@ userSchema.methods.setMain = function(character){
   else throw `cannot set a character not belongning to this user as his main`
 }
 
-userSchema.methods.grantAdmin = function(){
+userSchema.methods.grantRole = function(role){
+  if(typeof role != 'string') throw 'User.grantRole Error: role must be a string, not ' + typeof role;
+  if(!ROLE_LIST.includes(role)) throw `User.grantRole Error: '${role}' is not a valid role`;
   return new Promise((resolve,reject) => {
-    if(!this.scopes.includes('Admin')) {
-      this.scopes.push('Admin')
+    if(!this.scopes.includes(role)) {
+      this.scopes.push(role)
       this.save();
       resolve(this)
       log(this,true)
@@ -156,10 +159,12 @@ userSchema.methods.grantAdmin = function(){
   })
 }
  
-userSchema.methods.removeAdmin = function(){
+userSchema.methods.removeRole = function(role){
+  if(typeof role != 'string') throw 'User.grantRole Error: role must be a string, not ' + typeof role;
+  if(!ROLE_LIST.includes(role)) throw `User.grantRole Error: '${role}' is not a valid role`;
   return new Promise((resolve,reject) => {
     let adminIndex = this.scopes.findIndex((element) => {
-      return element == 'Admin'
+      return element == role
     })
     if(adminIndex != -1) {
       this.scopes.splice(adminIndex,1)

@@ -38,7 +38,7 @@ module.exports.run = async(bot, message, args) => {
 			throw `issue with removing admin from ${args[0]}, please tag the user you wish to give Xp to.`
 		}
 		// do the actual operation
-		let res = await user.removeAdmin();
+		let res = await user.removeRole('Admin');
 		let txt = `successfully removed admin from ${res.handle}`;
 		msg.edit(txt);
 		log(txt,true)

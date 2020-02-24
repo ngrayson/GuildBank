@@ -1,4 +1,7 @@
 const jsUtil = require('util');
+const promisify = jsUtil.promisify;
+const fs = require('fs');
+fs.readdirAsync = promisify(fs.readdir);
 
 const BAR_WIDTH = 50;
 
@@ -98,7 +101,8 @@ function asciiTable(array) {
     // returns a neat string ascii table of the given array
 }
 
-function clearCommandCache(bot) {
+async function reloadBotCommands(bot) {
+    if(bot.constructor.name != "Client") throw 'cannot reload bot commands without a bot.'
     try {
 		bot.commands.forEach( cmd => {
 			delete require.cache[require.resolve(`../chatbot/cmds/${cmd.help.name}.js`)];
@@ -106,6 +110,29 @@ function clearCommandCache(bot) {
 	} catch(e) {
 		log(e,true)
     }
+	// bot.commands = new Discord.Collection();
+	let numCmds;
+	try {
+		let files = await fs.readdirAsync('./chatbot/cmds/')
+		let jsfiles = files.filter(f => f.split(".").pop() === "js");
+		if(jsfiles.length <= 0) {
+			log("No commands to load!", true);
+			return 0;
+		}
+		let numCmds = jsfiles.length
+		log(`    Loading ${numCmds} commands!`,true);
+
+		jsfiles.forEach((f, i) => {
+			let props = require(`../chatbot/cmds/${f}`);
+			log(`      command ${i+1}: ${f} loaded!`,true);
+			bot.commands.set(props.help.name, props);
+		});
+		log(`resolving with ${numCmds} commands`,true)
+		return numCmds;
+	}catch(e) {
+		log('Error, a real bad one',true)
+		log(e,true)
+	}
     return true;
 }
 
@@ -116,5 +143,5 @@ module.exports = {
     isCharacter,
     isUser,
     name,
-    clearCommandCache
+    reloadBotCommands
 }

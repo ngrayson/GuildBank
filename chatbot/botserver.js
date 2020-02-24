@@ -1,14 +1,10 @@
 const log = require('../util/util.js').log;
 const util = require('../util/util.js');
 
-const clearCommandCache = require('../util/util.js').clearCommandCache;
-const promisify = require('util').promisify;
+const reloadBotCommands = require('../util/util.js').reloadBotCommands;
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
-
-const fs = require('fs');
-fs.readdirAsync = promisify(fs.readdir);
 
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
 const DEV_MODE = true;
@@ -22,40 +18,11 @@ const nameChange = require('./events/nameChange.js')
 let chatbotReady = false;
 
 const bot = new Discord.Client({disableEveryone: true});
-bot.loadCommands = loadCmds;
 bot.commands = new Discord.Collection();
+reloadBotCommands(bot);
 
 let lastCommandMsg 
 // initialize commands
-
-loadCmds() 
-
-async function loadCmds() {
-	await clearCommandCache(bot)
-	bot.commands = new Discord.Collection();
-	let numCmds;
-	try {
-		let files = await fs.readdirAsync('./chatbot/cmds/')
-		let jsfiles = files.filter(f => f.split(".").pop() === "js");
-		if(jsfiles.length <= 0) {
-			log("No commands to load!", true);
-			return 0;
-		}
-		let numCmds = jsfiles.length
-		log(`    Loading ${numCmds} commands!`,true);
-
-		jsfiles.forEach((f, i) => {
-			let props = require(`./cmds/${f}`);
-			log(`      command ${i+1}: ${f} loaded!`,true);
-			bot.commands.set(props.help.name, props);
-		});
-		log(`resolving with ${numCmds} commands`,true)
-		return numCmds;
-	}catch(e) {
-		log('Error, a real bad one',true)
-		log(e,true)
-	}
-}
 
 
 function run() {
@@ -132,7 +99,7 @@ function message(msg) {
 	if(DEV_MODE){
 		if(command == "!!" && lastCommandMsg) {
 			msg.channel.send('running last command:\n`'+lastCommandMsg.content+'`');
-			let reloadPromise = loadCmds();
+			let reloadPromise = util.reloadBotCommands(bot);
 			reloadPromise.then( value => {
 				log(`reload completed ${value}, calling ${lastCommandMsg.content}`,true)
 			}).then(res => {

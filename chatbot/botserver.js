@@ -1,10 +1,15 @@
 const log = require('../util/util.js').log;
 const util = require('../util/util.js');
+const promisify = require('util').promisify;
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
+
 const fs = require('fs');
+fs.readdirAsync = promisify(fs.readdir);
+
 const CHATBOT_ENABLED = process.env.CHATBOT_ENABLED == 1;
+const DEV_MODE = true;
 const guildManager = require('./guildManager.js');
 const userManager = require('./../GuildHall/userManager')
 const token = process.env.DBOT_TOKEN;
@@ -17,27 +22,43 @@ let chatbotReady = false;
 const bot = new Discord.Client({disableEveryone: true});
 bot.commands = new Discord.Collection();
 
-
+let lastCommandMsg 
 // initialize commands
 
-fs.readdir('./chatbot/cmds/', (err, files) => {
-	if(err) throw err;
+loadCmds() 
 
-	let jsfiles = files.filter(f => f.split(".").pop() === "js");
-	if(jsfiles.length <= 0) {
-		log("No commands to load!", true);
-		return;
-	}
+bot.reloadCommands = reloadCmds;
 
-	log(`    Loading ${jsfiles.length} commands!`,true);
+function loadCmds() {
+	return new Promise((resolve,reject) => {
+		let numCmds;
+		fs.readdirAsync('./chatbot/cmds/').then(files => {
+			let jsfiles = files.filter(f => f.split(".").pop() === "js");
+			if(jsfiles.length <= 0) {
+				log("No commands to load!", true);
+				resolve(0)
+			}
+			let numCmds = jsfiles.length
+			log(`    Loading ${numCmds} commands!`,true);
 
-	jsfiles.forEach((f, i) => {
-		let props = require(`./cmds/${f}`);
-		log(`      command ${i+1}: ${f} loaded!`,true);
-		bot.commands.set(props.help.name, props);
-	});
-})
+			jsfiles.forEach((f, i) => {
+				let props = require(`./cmds/${f}`);
+				log(`      command ${i+1}: ${f} loaded!`,true);
+				bot.commands.set(props.help.name, props);
+			});
+			log(`resolving with ${numCmds} commands`,true)
+			resolve(numCmds)
+		}).catch(e => {
+			log('Error, a real bad one',true)
+			log(e,true)
+		})	
+	})
+}
 
+function reloadCmds() {
+	bot.command = new Discord.Collection();
+	return loadCmds();
+}
 
 function run() {
   if(CHATBOT_ENABLED) {
@@ -108,6 +129,17 @@ function message(msg) {
 	let command = messageArray[0];
 	let args = messageArray.slice(1);
 	if(!command.startsWith(prefix)) return;
+
+	/* Dev Mode Feature */
+	if(DEV_MODE){
+		if(command == "!!" && lastCommandMsg) {
+			msg.channel.send('running last command:\n`'+lastCommandMsg.content+'`');
+			return message(lastCommandMsg);
+		}
+		else {
+			lastCommandMsg = msg;
+		}
+	}
 
 	let cmd = bot.commands.get(command.slice(prefix.length));
 

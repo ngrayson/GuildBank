@@ -1,3 +1,5 @@
+const jsUtil = require('util');
+
 const BAR_WIDTH = 50;
 
 const BAR_PLUS   = '\x1b[36m' + '+'.repeat(BAR_WIDTH) + '\x1b[0m';

@@ -2,6 +2,7 @@ const DEV_MODE = process.env.DEV_MODE == 1;
 const userManager = require('../GuildHall/userManager')
 const log = require('../util/util.js').log;
 const INVALID_MSG_DELAY_MS = 5000;
+const reloadBotCommands = require('./commandLoader');
 const util = require('../util/util.js');
 
 let lastCommandMsg;
@@ -34,7 +35,7 @@ function message(bot,msg) {
 	/* Dev Mode Feature */
     if(DEV_MODE && command == "!!" && lastCommandMsg && lastCommandMsg.content != '!!') {
         msg.channel.send('running last command:\n`'+lastCommandMsg.content+'`');
-        let reloadPromise = util.reloadBotCommands(bot);
+        let reloadPromise = reloadBotCommands(bot);
         reloadPromise.then( value => {
             log(`reload completed ${value}, calling ${lastCommandMsg.content}`,true)
         }).then(res => {

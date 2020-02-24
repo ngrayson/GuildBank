@@ -1,7 +1,7 @@
 const log = require('../util/util.js').log;
 const messageParser = require(`./messageParser.js`);
 
-const reloadBotCommands = require('../util/util.js').reloadBotCommands;
+const reloadBotCommands = require('./commandLoader');
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');

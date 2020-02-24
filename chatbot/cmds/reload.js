@@ -1,8 +1,5 @@
 const log = require('../../util/util.js').log;
-const util = require('../../util/util.js');
-const reloadBotCommands = require('../../util/util.js').reloadBotCommands;
-const userManager = require('../../GuildHall/userManager.js')
-const characterManager = require('../../GuildHall/characterManager.js')
+const reloadBotCommands = require('../commandLoader.js');
 
 let name = `reload`;
 
@@ -32,7 +29,7 @@ module.exports.run = async(bot, message, args) => {
 	// parse args and test them
 	try{
 		// do the actual operation
-		let numCmds = await util.reloadBotCommands(bot);
+		let numCmds = await reloadBotCommands(bot);
 		// update reply and log it
 		let txt = `successfully reloaded ${numCmds} commands`;
 		msg.edit(txt);

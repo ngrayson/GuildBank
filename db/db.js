@@ -15,7 +15,7 @@ const mongoUrl =
 	MONGO_PW + 
 	'@loom-nsyqv.azure.mongodb.net/loom?retryWrites=true&w=majority';
 
-mongoose.connect(mongoUrl, {useNewUrlParser: true}).catch(err => {
+mongoose.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true}).catch(err => {
 	log("Error with mongoose connecting!",true);
 	throw err;
 });

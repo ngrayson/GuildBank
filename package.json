@@ -30,8 +30,9 @@
     "nodemon": "^1.19.4"
   },
   "nodemonConfig": {
+    "comment": "chatbot/cmds/*.js",
     "ignore": [
-      "./chatbot/cmds/*",
+      "chatbot/cmds/*.js",
       ".git",
       "node_modules/**/node_modules"
     ],

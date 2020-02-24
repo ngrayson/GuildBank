@@ -1,5 +1,7 @@
 const log = require('../util/util.js').log;
 const util = require('../util/util.js');
+
+const clearCommandCache = require('../util/util.js').clearCommandCache;
 const promisify = require('util').promisify;
 
 require('dotenv').config({path: '/../.env'})
@@ -20,6 +22,7 @@ const nameChange = require('./events/nameChange.js')
 let chatbotReady = false;
 
 const bot = new Discord.Client({disableEveryone: true});
+bot.loadCommands = loadCmds;
 bot.commands = new Discord.Collection();
 
 let lastCommandMsg 
@@ -27,38 +30,33 @@ let lastCommandMsg
 
 loadCmds() 
 
-bot.reloadCommands = reloadCmds;
+async function loadCmds() {
+	await clearCommandCache(bot)
+	bot.commands = new Discord.Collection();
+	let numCmds;
+	try {
+		let files = await fs.readdirAsync('./chatbot/cmds/')
+		let jsfiles = files.filter(f => f.split(".").pop() === "js");
+		if(jsfiles.length <= 0) {
+			log("No commands to load!", true);
+			return 0;
+		}
+		let numCmds = jsfiles.length
+		log(`    Loading ${numCmds} commands!`,true);
 
-function loadCmds() {
-	return new Promise((resolve,reject) => {
-		let numCmds;
-		fs.readdirAsync('./chatbot/cmds/').then(files => {
-			let jsfiles = files.filter(f => f.split(".").pop() === "js");
-			if(jsfiles.length <= 0) {
-				log("No commands to load!", true);
-				resolve(0)
-			}
-			let numCmds = jsfiles.length
-			log(`    Loading ${numCmds} commands!`,true);
-
-			jsfiles.forEach((f, i) => {
-				let props = require(`./cmds/${f}`);
-				log(`      command ${i+1}: ${f} loaded!`,true);
-				bot.commands.set(props.help.name, props);
-			});
-			log(`resolving with ${numCmds} commands`,true)
-			resolve(numCmds)
-		}).catch(e => {
-			log('Error, a real bad one',true)
-			log(e,true)
-		})	
-	})
+		jsfiles.forEach((f, i) => {
+			let props = require(`./cmds/${f}`);
+			log(`      command ${i+1}: ${f} loaded!`,true);
+			bot.commands.set(props.help.name, props);
+		});
+		log(`resolving with ${numCmds} commands`,true)
+		return numCmds;
+	}catch(e) {
+		log('Error, a real bad one',true)
+		log(e,true)
+	}
 }
 
-function reloadCmds() {
-	bot.command = new Discord.Collection();
-	return loadCmds();
-}
 
 function run() {
   if(CHATBOT_ENABLED) {
@@ -134,10 +132,16 @@ function message(msg) {
 	if(DEV_MODE){
 		if(command == "!!" && lastCommandMsg) {
 			msg.channel.send('running last command:\n`'+lastCommandMsg.content+'`');
-			return message(lastCommandMsg);
+			let reloadPromise = loadCmds();
+			reloadPromise.then( value => {
+				log(`reload completed ${value}, calling ${lastCommandMsg.content}`,true)
+			}).then(res => {
+				message(lastCommandMsg)
+			});
 		}
 		else {
 			lastCommandMsg = msg;
+			log(`lastCommand set to ${msg.content}`,true)
 		}
 	}
 

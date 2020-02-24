@@ -1,5 +1,6 @@
 const log = require('../../util/util.js').log;
 const util = require('../../util/util.js');
+const clearCommandCache = require('../../util/util.js').clearCommandCache;
 const userManager = require('../../GuildHall/userManager.js')
 const characterManager = require('../../GuildHall/characterManager.js')
 
@@ -27,12 +28,12 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
+	await clearCommandCache(bot);
 	let msg = await message.channel.send("reloading commands...")
-
 	// parse args and test them
 	try{
 		// do the actual operation
-		let numCmds = await bot.reloadCommands()
+		let numCmds = await bot.loadCommands()
 		// update reply and log it
 		let txt = `successfully reloaded ${numCmds} commands`;
 		msg.edit(txt);

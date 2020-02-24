@@ -3,7 +3,7 @@ const util = require('../../util/util.js');
 const userManager = require('../../GuildHall/userManager.js')
 const characterManager = require('../../GuildHall/characterManager.js')
 
-let name = `template`;
+let name = `templateCmd`;
 
 module.exports.help = {
 	name: name,

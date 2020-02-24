@@ -98,11 +98,23 @@ function asciiTable(array) {
     // returns a neat string ascii table of the given array
 }
 
+function clearCommandCache(bot) {
+    try {
+		bot.commands.forEach( cmd => {
+			delete require.cache[require.resolve(`../chatbot/cmds/${cmd.help.name}.js`)];
+		})
+	} catch(e) {
+		log(e,true)
+    }
+    return true;
+}
+
 module.exports = {
 	log,
 	logBar,
     symDiff,
     isCharacter,
     isUser,
-    name
+    name,
+    clearCommandCache
 }

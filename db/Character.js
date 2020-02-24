@@ -78,7 +78,6 @@ characterSchema.virtual('charString').get( function() {
 })
 
 characterSchema.virtual('fullName').get( function() {
-	log(this,true)
 	let fullName = this.firstName 
 		? this.firstName + ' ' + this.lastName
 		: 'a nameless person';
@@ -96,8 +95,8 @@ characterSchema.virtual('remainingExperience').get( function(){
 characterSchema.virtual('moneyToString').get( function() {
 	let moneyString = '';
 	let money = this.moneyCp;
-	log('moneyToString: money',true)
-	log(money,true)
+	log('moneyToString: money')
+	log(money)
 	let gold = Math.floor(money/100);
 	money -= gold*100;
 	

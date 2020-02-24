@@ -2,6 +2,7 @@ const log = require('../util/util.js').log;
 const util = require('../util/util.js');
 
 const reloadBotCommands = require('../util/util.js').reloadBotCommands;
+const invalidCommand = require('./lib/invalidCommand.js');
 
 require('dotenv').config({path: '/../.env'})
 const Discord = require('discord.js');
@@ -183,7 +184,11 @@ function message(msg) {
 
 			}
 		});
-	} 
+	} else {
+		// msg was not a valid command
+		log(`'${msg.content}' is not a valid command`,true )
+		invalidCommand(msg);
+	}
 }
 
 function memberUpdate(oldMember,newMember){

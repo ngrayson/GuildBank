@@ -50,6 +50,10 @@ async function reloadBotCommands(bot) {
 
 /* end of command reloading code */
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve,ms));
+}
+
 function log(str,logToCLI) {
 	// write to file
 	// write to verbose log channel in admin server
@@ -149,5 +153,6 @@ module.exports = {
     isCharacter,
     isUser,
     name,
-    reloadBotCommands
+    reloadBotCommands,
+    sleep
 }

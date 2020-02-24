@@ -72,8 +72,8 @@ function message(bot,msg) {
 			}
 
 			// check to see if user has permissions
-			log('user:',true)
-			log(user,true)
+			log('user:')
+			log(user)
 			// get user role
 			let userPermFlags = 0;
 			if (user.isAdmin) userPermFlags += 4;
@@ -99,7 +99,7 @@ function message(bot,msg) {
 				// if you get an error here, make sure the run function in the cmd file is async
 				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
 				cmd.run(bot, msg, args).catch( err => {
-					log('something went wrong with that command... ',true)
+					log(`something went wrong with the ${cmd.help.name} command `,true)
 					log(err,true)
 				});
 			} else {

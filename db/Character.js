@@ -73,6 +73,10 @@ characterSchema.statics.newCharacter = function(charObj) {
 	})
 }
 
+characterSchema.virtual('charString').get( function() {
+	return `${this.firstName} the level ${this.level} ${this.charRace} ${this.charClass}`
+})
+
 characterSchema.virtual('fullName').get( function() {
 	log(this,true)
 	let fullName = this.firstName 
@@ -148,8 +152,8 @@ characterSchema.statics.listCharacters = function() {
 
 // returns a promise for the characters belonging to a user
 characterSchema.statics.fromUserId = function(userMongooseId) {
-	log('userMongooseId', true)
-	log(userMongooseId, true)
+	log('userMongooseId')
+	log(userMongooseId)
 	return Character.find({Id: userMongooseId});
 }
 
@@ -249,8 +253,8 @@ function remainingExperience(experience){
 }
 
 function initializeFields(charObj){
-	log('initializeFields(charObj):',true)
-	log(charObj,true)
+	log('initializeFields(charObj):')
+	log(charObj)
 	let newCharObj = {
 		firstName: 	     typeof charObj.firstName       == 'undefined' ? 'DEFAULT' : charObj.firstName,
 		lastName:        typeof charObj.lastName        == 'undefined' ? 'DEFAULT' : charObj.lastName,

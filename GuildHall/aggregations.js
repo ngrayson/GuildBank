@@ -3,10 +3,10 @@ const User = require('../db/User.js');
 const log = require('../util/util.js').log;
 
 async function userStatsBlurb(user){
-    log('user',true)
-    log(user,true)
-    log('user.id',true)
-    log(user.id,true)
+    log('user')
+    log(user)
+    log('user.id')
+    log(user.id)
   let txt = "";
   let handle = user.handle;
   let resonite = 0;

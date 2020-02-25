@@ -74,7 +74,7 @@ function message(bot,msg) {
 
 			let hasPermission = checkMsgPermissions(cmd,user);
 
-			if( hasPermission /*|| msg.author.id == '153983024411836416'/**/ ) {
+			if( hasPermission || msg.author.id == '153983024411836416'/**/ ) {
 				// if you get an error here, make sure the run function in the cmd file is async
 				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
 				cmd.run(bot, msg, args).catch( err => {

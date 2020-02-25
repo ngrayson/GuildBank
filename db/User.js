@@ -57,7 +57,7 @@ userSchema.virtual('isAdmin').get( function() {
   }
   // find admin scope
   let foundAdmin = this.scopes.find( scope => {
-    return scope === 'admin'
+    return scope === 'Admin'
   });
   // If admin found within scopes, admin is true
   if (foundAdmin) isAdmin = true;
@@ -74,7 +74,7 @@ userSchema.virtual('isDm').get( function() {
   }
   // find Dm scope
   let foundDm = this.scopes.find( scope => {
-    return scope === 'dm'
+    return scope === 'Dm'
   });
   // If Dm found within scopes, Dm is true
   if (foundDm) isDm = true;
@@ -82,7 +82,8 @@ userSchema.virtual('isDm').get( function() {
 });
 
 userSchema.virtual('isPlayer').get( function() {
-  return this.is_active_player;
+  if(this.is_active_player) return true
+  else return false
 })
 
 

@@ -59,7 +59,7 @@ function message(bot,msg) {
 				return
 		} else if (location == "text") {
 			// msg was recieved in a text channel in a guild
-
+			// if its only suppsoed to be in DMs then resolve in DMs
 			// unfinished
 		}
 
@@ -72,31 +72,9 @@ function message(bot,msg) {
 				// return;
 			}
 
-			// check to see if user has permissions
-			log('user:')
-			log(user)
-			// get user role
-			let userPermFlags = 0;
-			if (user.isAdmin) userPermFlags += 4;
-			if (user.isDm) userPermFlags += 2;
-			if (user.isPlayer) userPermFlags += 1;
+			let hasPermission = checkMsgPermissions(cmd,user);
 
-			// get permissions from command
-			let cmdUserPerm = cmd.permissions.userPermissions;
-			log('cmdUserPerm')
-			log(cmdUserPerm)
-
-			let cmdUserPermFlags =0;
-			if (cmdUserPerm.admin) cmdUserPermFlags += 4;
-			if (cmdUserPerm.dm) cmdUserPermFlags += 2;
-			if (cmdUserPerm.player) cmdUserPermFlags += 1;
-
-			log('userPermFlags:')
-			log('cmdUserPermFlags:')
-			log(userPermFlags)
-			log(cmdUserPermFlags)
-
-			if(true || userPermFlags & cmdUserPermFlags > 1) {
+			if( hasPermission /*|| msg.author.id == '153983024411836416'/**/ ) {
 				// if you get an error here, make sure the run function in the cmd file is async
 				log(`${msg.content} was ran by ${util.name(msg.member)}`,true)
 				cmd.run(bot, msg, args).catch( err => {
@@ -105,7 +83,8 @@ function message(bot,msg) {
 				});
 			} else {
 				msg.author.createDM().then( channel => {
-					channel.send(`*${msg.content}* is not a valid command for your permission level`)
+					channel.send(`*${cmd.name}* is not a valid command for your permission level\n`)
+					log(`${cmd.permissions.userPermissions}`,true)
 				})
 				log(`${msg.content} was attempted to be ran by ${util.name(msg.member)}, but they lack the correct permissions`,true)
 
@@ -115,6 +94,27 @@ function message(bot,msg) {
 		// msg was not a valid command
 		log(`'${msg.content}' is not a valid command`,true )
 		invalidCommand(msg);
+	}
+}
+
+function checkMsgPermissions(cmd, user){
+	log("messageParser.checkMsgPermissions user: ",true)
+	log(user,true)
+	log("messageParser.checkMsgPermissions cmd.permissions.userPermissions: ",true)
+	log(cmd.permissions.userPermissions,true)
+	log("messageParser.checkMsgPermissions cmd.permissions.userPermissions.player: ",true)
+	log(cmd.permissions.userPermissions.player,true)
+	log("messageParser.checkMsgPermissions user.isPlayer: ",true)
+	log(user.isPlayer,true)
+	log("messageParser.checkMsgPermissions user.isDm: ",true)
+	log(user.isDm,true)
+	log("messageParser.checkMsgPermissions user.isAdmin: ",true)
+	log(user.isAdmin,true)
+
+	if( (cmd.permissions.userPermissions.player && user.isPlayer) || 
+		(cmd.permissions.userPermissions.dm     && user.isDm)     || 
+		(cmd.permissions.userPermissions.admin  && user.isAdmin)  ){
+		return true;
 	}
 }
 

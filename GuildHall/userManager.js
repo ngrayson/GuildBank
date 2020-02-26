@@ -14,6 +14,19 @@ async function getUserByDiscordId(id){
 	return user;
 }
 
+async function newUser(handle, connection) {
+	
+	if(typeof handle != 'string') throw `userManager.newUser Error: handle must be of type string, not ${typeof handle}`
+	if(connection.discord && connection.discord.discordId) {}
+	else if(false) {}
+	else throw `no valid connections found, users must be connected to something`
+	let newUser = await User.newUser({
+		handle: handle,
+		connections: connection
+	})
+	return newUser;
+}
+
 function initializeUser(newUser){
 	if (!newUser.hasOwnProperty('discordId')) throw 'Users require a valid discord Id';
 
@@ -40,7 +53,7 @@ function initializeUser(newUser){
 					connections:{
 						discord: {
 							discord_handle: 'discordHandle' in newUser ? newUser.discordHandle : 'null',
-							discord_id: newUser.discordId
+							discordId: newUser.discordId
 						}
 					},
 					is_active: true
@@ -117,5 +130,6 @@ async function permissions(id){
 
 module.exports = {
 	getUserByDiscordId,
-	initializeUser
+	initializeUser,
+	newUser
 }

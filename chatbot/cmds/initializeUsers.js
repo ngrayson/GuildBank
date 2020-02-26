@@ -2,7 +2,7 @@ const players = require('../../GuildHall/userManager.js');
 const log = require('../../util/util.js').log;
 
 module.exports.help = {
-	name: 'initializePlayers',
+	name: 'initializeUsers',
 	description: 'attempts to initialize all members of current guild with the correct role'
 }
 

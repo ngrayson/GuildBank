@@ -41,7 +41,7 @@ module.exports.run = async(bot, message, args) => {
 			throw `issue with help, no user found.`
         }
 
-        txt += ` Discord_Id: ${user.connections.discord.discord_id}\n`
+        txt += ` discordId: ${user.connections.discord.discordId}\n`
         txt += ` Permission Scopes: \n  ${user.scopes.toString()}\n`
 
         txt += `Available Commands:\n`

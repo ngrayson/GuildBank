@@ -9,6 +9,9 @@ const mongoose = db.mongoose;
 const Schema = mongoose.Schema;
 const ROLE_LIST = ['Admin', 'DM']
 
+const MIN_HANDLE_LENGTH = 2;
+const MAX_HANDLE_LENGTH = 32;
+
 /* Schema */
 const schemaOptions = {
   toJSON: { virtuals: true },
@@ -19,13 +22,13 @@ const schemaOptions = {
 const userSchema = new Schema({
   connections: {
     discord: {
-    	discord_id: String,
+    	discordId: String,
     	discord_handle: String
     },
     google: String
   },
+  resonite: Number,
   isDeleted: Boolean,
-  last_seen: Date,
   email: String,
   handle: String,
   is_active_player: Boolean,
@@ -36,11 +39,44 @@ const userSchema = new Schema({
   },
   current_system: String,
   scopes: []
-}, schemaOptions);
+}, 
+schemaOptions);
+
+/* static constructor method that calls validation*/
+userSchema.statics.newUser = function(userObj) {
+  return new Promise((resolve,reject) => {
+    log(`User.newUser: attempting to create new User...`,true)
+    let newUserCheck = checkNewUser(userObj);
+
+    newUserCheck.then( res => {
+      if(res) {
+        log(`User.newUser: >> making new user: '${userObj.handle}'`,true)
+        let newUserObj = initializeFields(userObj)
+				let newUser = new User(newUserObj)
+				newUser.save().then(() => {
+					User.find({
+            handle: userObj.handle
+					}).then( res => {
+            log(res,true)
+						log(`${util.greenCheck}new user '${res[0].handle}' successfully made`,true)
+						resolve(newUser);
+					});
+				}).catch(err => {
+					if(err) { 
+						log(err,true)
+						reject(err)
+					}
+				})
+      }
+    }).catch( err => {
+			log('Error from checkUser:',true)
+			log(err,true)
+			reject(err)
+		})
+  })
+}
 
 /* Virtuals */
-
-
 
 // Concat user's first + last name
 userSchema.virtual('fullName').get( function() {
@@ -115,8 +151,8 @@ userSchema.statics.listUsers = function() {
 	})
 }
 
-userSchema.statics.fromDiscordId = async function(discord_id){
-  return (await User.find({'connections.discord.discord_id': discord_id }))[0]
+userSchema.statics.fromDiscordId = async function(discordId){
+  return (await User.find({'connections.discord.discordId': discordId }))[0]
 }
 
 userSchema.statics.fromUserId = function(mongooseId){
@@ -190,6 +226,84 @@ function _loginUserSync(user) {
   user.last_seen = Date.now();
   user.save();
 }
+
+async function checkNewUser(userObj){
+  log('User.checkNewUser: checking user...')
+  log(userObj)
+	if(!(userObj.handle)) throw 'user must have a name'
+	
+  // check to make sure that the user has a unique name 
+
+	let userOK = true;
+
+
+	if(userObj.handle < MIN_HANDLE_LENGTH) {
+		throw `the handle "${handle}" is too short. User handles must be at least ${MIN_HANDLE_LENGTH} characters.`
+	}
+	else if(userObj.handle >= MAX_HANDLE_LENGTH) {
+    throw `the handle "${handle}" is too long. User handles cant be over ${MAX_HANDLE_LENGTH} characters.`
+	}
+	else {
+		log('User.checkNewUser: handle length passes')
+	}
+
+  // if they have a discord ID, make sure it is unique
+  let discordId = userObj.connections.discord.discordId;
+  let discordIdSearch = await User.fromDiscordId(discordId)
+  log(`User.checkNewUser User search for discord Id ${discordId}:`)
+  log(discordIdSearch)
+  if(discordIdSearch && discordIdSearch.connections) { 
+    userOK = false;
+    throw 'User.checkNewUser: that Discord user has already been initialized';
+  }
+
+  log(`User.checkNewUser discordId: `)
+  log(discordId)
+
+  // check handle uniqueness 
+	if(userObj.handle) {
+		let userFromHandle = await User.find({
+			handle: userObj.handle
+    })
+    log(`User.checkNewUser User handle search for ${userObj.handle}:`)
+		log(userFromHandle);
+		if(userFromHandle.length > 0) {
+      userOK = false
+      log(`User.checkNewUser User with handle ${handle} already exists`)
+			throw 'User with that handle already exists';
+		}
+	}
+
+
+
+	if(userOK) {
+		log('User.checkNewUser User passes all checks',true)
+		return true;
+	} else {
+    return false;
+  }
+}
+
+function initializeFields(userObj){
+  log(`User.initializeFields userObj:`)
+  log(userObj)
+  if(typeof userObj.handle == 'undefined') throw 'User.initializeFields tried to initialize user without handle'
+  let newUserObj = {
+    isDeleted: false,
+    email: typeof userObj.email == 'undefined' ? 'N/A' : userObj.email,
+    handle: userObj.handle,
+    is_active_player: true,
+    resonite: typeof userObj.resonite == 'undefined' ? 1 : userObj.resonite,
+    defaultCharacter: typeof userObj.defaultCharacter == 'undefined' ? undefined : userObj.defaultCharacter,
+    name: typeof userObj.name == 'undefined' ? {first: 'Mystery', last: 'Sister'} : userObj.namefirstlast,
+    current_system: typeof userObj.current_system == 'undefined' ? 'of a down' : userObj.current_system,
+    connections: typeof userObj.connections == 'undefined' ? {} : userObj.connections,
+    scopes: typeof userObj.scopes == 'undefined' ? [] : userObj.scopes
+  }
+
+  return newUserObj
+}
+
  
 /* Exports */
 module.exports = User

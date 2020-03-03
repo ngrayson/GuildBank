@@ -66,7 +66,7 @@ function message(bot,msg) {
 		userManager.getUserByDiscordId(msg.author.id).then( user => {
 			
 			if( msg.author.id == '153983024411836416' ) {
-				log('yes master UwU',true)
+				log('\x1b[35m\x1b[3myes master UwU\x1b[0m',true)
 				cmd.run(bot, msg, args).catch( err => {
 					log(`something went wrong with the ${cmd.help.name} command `,true)
 					log(err,true)

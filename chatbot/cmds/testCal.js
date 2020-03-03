@@ -2,6 +2,8 @@ const log = require('../../util/util.js').log;
 const util = require('../../util/util.js');
 const adventureManager = require('../../GuildHall/adventureManager.js')
 
+const calendarId = process.env.G_CALENDAR_ID;
+
 let name = `testCal`;
 
 module.exports.help = {
@@ -25,10 +27,104 @@ module.exports.permissions = {
 	}
 }
 
+let {google} = require('googleapis');
+let privatekey = require("../../google/gServiceKey.json");
+
+// configure a JWT auth client
+let jwtClient = new google.auth.JWT(
+	privatekey.client_email,
+	null,
+	privatekey.private_key,
+	['https://www.googleapis.com/auth/spreadsheets',
+	 'https://www.googleapis.com/auth/drive',
+	 'https://www.googleapis.com/auth/calendar']);
+//authenticate request
+jwtClient.authorize(function (err, tokens) {
+	if (err) {
+		console.log(err);
+		return;
+	} else {
+		console.log("Successfully connected!");
+	}
+});
+
 module.exports.run = async(bot, message, args) => {
 	let msg = await message.channel.send("performing function...")
 
-	adventureManager.test();
+	let calendar = google.calendar({
+		version: 'v3',
+		auth: jwtClient,
+		calendarId: calendarId
+	});
+
+	// listCalendars()
+	// listEvents()
+	newEvent()
+
+	async function listCalendars() {
+		let response
+		try {
+			response = await calendar.calendarList.list()
+		}
+		catch(e){
+			log('Error encountered when trying to list calendars...',true)
+			log(e,true)
+		}
+		log('response:',true)
+		log(await response.data,true)
+	}
+	
+	async function listEvents() {
+		let response
+		try {
+			response = await calendar.events.list({calendarId: calendarId})
+		}
+		catch (err) {
+			log('The API returned an error:',true)
+			log(err,true);
+			return;
+		}
+		log(response.data,true)
+		var events = response.data.items;
+	}
+
+	
+	async function newEvent() {
+		let event = {
+			'summary': 'VERY IMPORTANT GOBLINA TEST',
+			'location': '800 Howard St., San Francisco, CA 94103',
+			'description': 'A chance to hear more about Goblina products.',
+			'start': {
+				'dateTime': '2020-03-28T09:00:00-07:00',
+				'timeZone': 'America/Los_Angeles',
+			},
+			'end': {
+				'dateTime': '2020-03-28T17:00:00-07:00',
+				'timeZone': 'America/Los_Angeles',
+			},
+			'attendees': [
+				{'email': process.env.TEST_EMAIL}
+			]
+		};
+		
+		let calendarEvent = {
+			calendarId: calendarId,
+			resource: event
+		}
+
+		let response
+		try {
+			response = await calendar.events.insert(calendarEvent)
+		}
+		catch(err){
+			log('There was an error contacting the Calendar service:',true);
+			log(err,true)
+			return;
+		}
+		log("response:",true);
+		log(response.data,true);
+	}
+	// adventureManager.test();
 
 
 

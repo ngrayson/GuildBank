@@ -57,5 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# google API credentials and token
+google/gServiceKey.json
+google/gCredentials.json
+
 # next.js build output
 .next

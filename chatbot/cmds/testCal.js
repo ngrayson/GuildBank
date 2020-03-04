@@ -88,7 +88,6 @@ module.exports.run = async(bot, message, args) => {
 		var events = response.data.items;
 	}
 
-	
 	async function newEvent() {
 		let event = {
 			'summary': 'VERY IMPORTANT GOBLINA TEST',

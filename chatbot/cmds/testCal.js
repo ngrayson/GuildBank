@@ -1,6 +1,6 @@
 const log = require('../../util/util.js').log;
 const util = require('../../util/util.js');
-const adventureManager = require('../../GuildHall/sessionManager.js/index.js')
+const adventureManager = require('../../GuildHall/sessionManager.js')
 
 const calendarId = process.env.G_CALENDAR_ID;
 

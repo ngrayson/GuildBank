@@ -17,7 +17,7 @@ let sessionSchema = new mongoose.Schema({
     },
     playLocation: String,
     maxPlayers: Number,
-    recappingUserId: mongoose.SchemaType.ObjectId, 
+    recappingUserId: mongoose.SchemaTypes.ObjectId, 
     status: String
 },
 {

@@ -27,7 +27,7 @@ module.exports.permissions = {
 }
 
 module.exports.run = async(bot, message, args) => {
-	let msg = await message.channel.send("performing function...")
+	let msg = await message.channel.send(`performing function ${name}...`)
 
 	// parse args and test them
 	try{

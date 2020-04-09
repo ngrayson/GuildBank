@@ -6,7 +6,7 @@ const log = util.log;
 const characterOptions = require('../characterOptions.js');
 const Character = require('../db/Character.js');
 const User = require('../db/User.js');
-const userExists = require('../GuildHall/userManager.js').isInitialized;
+const userExists = require('../GuildHall/userManager.js').isInitialized; // this should be changed to hit User.js instead
 
 const db = require('../db/db.js');
 

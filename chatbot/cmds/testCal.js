@@ -117,7 +117,7 @@ module.exports.run = async(bot, message, args) => {
 		}
 		catch(err){
 			log('There was an error contacting the Calendar service:',true);
-			log(err,true)
+			log(err.errors,true)
 			return;
 		}
 		log("response:",true);

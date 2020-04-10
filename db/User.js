@@ -257,19 +257,20 @@ async function checkNewUser(userObj){
     throw 'User.checkNewUser: that Discord user has already been initialized';
   }
 
-  log(`User.checkNewUser discordId: `)
-  log(discordId)
+  log(`User.checkNewUser discordId: `,true)
+  log(discordId,true)
+  log(userObj,true)
 
   // check handle uniqueness 
 	if(userObj.handle) {
 		let userFromHandle = await User.find({
 			handle: userObj.handle
     })
-    log(`User.checkNewUser User handle search for ${userObj.handle}:`)
+    log(`User.checkNewUser User handle search for ${userObj.handle}:`,true)
 		log(userFromHandle);
 		if(userFromHandle.length > 0) {
       userOK = false
-      log(`User.checkNewUser User with handle ${handle} already exists`)
+      log(`User.checkNewUser User with handle ${userFromHandle.handle} already exists`,true)
 			throw 'User with that handle already exists';
 		}
 	}

@@ -37,16 +37,17 @@ module.exports.run = async(bot, message, args) => {
 		{
 			message.channel.send(`${discordId} is not a valid discord ID from this guild. As a result, no User <@${discordId}> has been initialized`);
 		}	
+		log(member,true)
 		let target
 		let xp
 		// do the actual operation
 		let newUserConnection = {
 			discord:{
-				discordHandle: message.author.username,
+				discordHandle: member.user.username,
 				discordId: discordId
 			}
 		}
-		let res = await userManager.newUser(message.author.username,newUserConnection);
+		let res = await userManager.newUser(member.user.username,newUserConnection);
 
 		// update reply and log it
 		let txt = `successfully initialized user ${res.handle}`;
